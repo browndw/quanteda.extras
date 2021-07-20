@@ -91,14 +91,14 @@ key_keys <- function (target_dfm, reference_dfm, threshold=c(0.05, 0.01, 0.001, 
   
   # Here, we're just restructuring our data.
   # First, we're making sure it's trimmed.
-  target_dfm <- quanteda::dfm_trim(target_dfm, min_termfreq = 1)
-  reference_dfm <- quanteda::dfm_trim(reference_dfm, min_termfreq = 1)
+  target_dfm <- suppressWarnings(quanteda::dfm_trim(target_dfm, min_termfreq = 1))
+  reference_dfm <-suppressWarnings(quanteda::dfm_trim(reference_dfm, min_termfreq = 1))
   
   # Sum the frequencies for the reference corpus.
-  reference_df <- quanteda.textstats::textstat_frequency(reference_dfm)
+  reference_df <- suppressWarnings(quanteda.textstats::textstat_frequency(reference_dfm))
   
   # Prep the target corpus by first converting it to a data.frame
-  target_df <- quanteda::convert(target_dfm, to = "data.frame")
+  target_df <- suppressWarnings(quanteda::convert(target_dfm, to = "data.frame"))
   target_docs <- target_df$doc_id
   # There are other ways of doing this, but we need to make sure
   # our data contains ALL tokens for both the target and reference corpora.
@@ -174,7 +174,7 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   if (length(unique(test_class)) != 1) stop ("Your corpora must be a quanteda dfm objects.")
   
   # Generate frequency lists using textstat_frequency()
-  freq_list <- lapply(all_corpora, quanteda.textstats::textstat_frequency)
+  freq_list <- lapply(all_corpora, suppressWarnings(quanteda.textstats::textstat_frequency))
   
   # Subset out the need columns
   freq_list <- lapply(freq_list, function(x) subset(x, select=c("feature", "frequency")))
@@ -206,7 +206,7 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
     k <- corpora_pairs[2,i]
     quanteda.extras::log_like(freq_df[,j], freq_df[,k], total_counts[j], total_counts[k], correct = yates)}))
   # Apply column names
-  colnames(ll) <- lapply(comp_names, function(x) paste(x, "G2", sep = "_"))
+  colnames(ll) <- lapply(comp_names, function(x) paste(x, "ll", sep = "_"))
   # Calculate the effect sizes
   lr <- as.data.frame(sapply(pair_idx, function(i) {
     j <- corpora_pairs[1,i]
