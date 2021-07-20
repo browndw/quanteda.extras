@@ -28,7 +28,7 @@ collocates_by_MI <- function(target_tkns, node_word, left=5, right=5){
   if(left > 0 & right > 0) search_exp <- paste0("(\\S+\\s)", "{", left, "}", node_word, "(\\s\\S+)", "{", right, "}")
   if(left == 0) search_exp <- paste0("^", node_word, "(\\s\\S+)", "{", right, "}")
   if(right == 0) search_exp <- paste0("(\\S+\\s)", "{", left, "}", node_word, "$")
-  suppressWarnings(
+  
   # Generate ngrams the size of the span
   n_grams <- suppressWarnings(quanteda::tokens_ngrams(target_tkns, n=span, concatenator = " "))
   # Convert ngrams to a vector

@@ -180,7 +180,7 @@ ARF <- function(target_tkns){
 
 #' Descriptive measures for all tokens in a corpus
 #' 
-#' The word_list() function aggregates useful descriptive measures: absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
+#' The frequency_table() function aggregates useful descriptive measures: absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
 #' 
 #' @param target_tkns The target quanteda tokens object.
 #' @return A data.frame containing absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.

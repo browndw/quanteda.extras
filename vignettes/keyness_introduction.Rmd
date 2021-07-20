@@ -1,5 +1,6 @@
 ---
-title: "keyness_introduction"
+title: "Introduction to keyness functions in the quanteda.extras R package"
+author: "David Brown"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{keyness_introduction}
@@ -14,6 +15,21 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+## Load the vnc package
+
+Load the package, as well as others that we'll use in this vignette.
+
+```{r setup, message = FALSE, error=FALSE}
 library(quanteda.extras)
+library(quanteda)
+library(tidyverse)
 ```
+
+## Prepare the data
+
+Let's begin by looking at the frequencies of the bigram *witch hunt* and the plural *witch hunts*, which are available in the package data and come from Google Books.
+
+```{r data_prep, , message = FALSE, error=FALSE}
+sc_df$text <- preprocess_text(sc_df$text)
+```
+
