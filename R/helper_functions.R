@@ -72,7 +72,7 @@ extend <- function(alphabet) function(i) {
 #' A function for creating Excel-style column headers
 #' @return A sequence of characters.
 #' @export
-excel_style <- extend(letters)
+excel_style <- quanteda.extras::extend(letters)
 
 #' A function for detecting the size of a corpus and setting the narmalizing factor to the nearest power of 10.
 #' @param corpus_total The total number of words in the corpus

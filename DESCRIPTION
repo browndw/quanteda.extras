@@ -20,7 +20,13 @@ RoxygenNote: 7.1.1
 Imports:
     quanteda, 
     quanteda.textstats, 
-    tibble
+    tibble,
+    stringr,
+    stringi,
+    dplyr,
+    purrr,
+    tidygraph,
+    data.table
 Depends: 
     R (>= 2.10)
 Suggests: 
