@@ -14,14 +14,14 @@ dispersions_token <- function(target_dfm, token) {
   if (class(token) != "character") stop ("Your token must be a character string.")
   
   # select the token counts from the dfm
-  t_counts <- quanteda::dfm_select(target_dfm, pattern = token, valuetype = "fixed")
+  t_counts <- suppressWarnings(quanteda::dfm_select(target_dfm, pattern = token, valuetype = "fixed"))
   if (length(t_counts) == 0) stop ("Token not found in document feature matrix.")
   # convert to a vector
   t_counts <- as.vector(t_counts)
   #c alculate the total number of tokens
-  total <- sum(quanteda::ntoken(target_dfm))
+  total <- sum(suppressWarnings(quanteda::ntoken(target_dfm)))
   # calculte the relative sizes of the parts of the corpus (in percent)
-  parts <- quanteda::ntoken(target_dfm)/total
+  parts <- suppressWarnings(quanteda::ntoken(target_dfm)/total)
   
   # The calc_disp1() function is baesed on a script written by Stefan Th. Gries 
   # It computes commonly used measures of dispersion that he discusses in these papers:
@@ -150,7 +150,7 @@ ARF <- function(target_tkns){
   if (class(target_tkns)[1] != "tokens") stop("ARF requires a quanteda tokens object.")
   
   # Combine into single tokens vector
-  target_tkns <- quanteda::tokens_group(target_tkns, groups = rep(1, quanteda::ndoc(target_tkns)))
+  target_tkns <- suppressWarnings(quanteda::tokens_group(target_tkns, groups = rep(1, quanteda::ndoc(target_tkns))))
   
   position_tks <- unlist(unique(target_tkns))
   total_tks <- length(position_tks)
@@ -191,7 +191,7 @@ frequency_table <- function(target_tkns){
   
   arf_df <- quanteda.extras::ARF(target_tkns)
   
-  target_dfm <- quanteda::dfm(target_tkns)
+  target_dfm <- suppressWarnings(quanteda::dfm(target_tkns))
   m <- as.matrix(target_dfm)
   idx <- seq(1:ncol(m))
   total <- sum(rowSums(m))
