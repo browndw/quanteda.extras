@@ -185,7 +185,7 @@ ARF <- function(target_tkns){
 #' @param target_tkns The target quanteda tokens object.
 #' @return A data.frame containing absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
 #' @export
-word_list <- function(target_tkns){
+frequency_table <- function(target_tkns){
   
   if (class(target_tkns)[1] != "tokens") stop("The function requires a quanteda tokens object.")
   
