@@ -15,11 +15,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Load the vnc package
+## Load the quanteda.extras package
 
 Load the package, as well as others that we'll use in this vignette.
 
-```{r setup, message = FALSE, error=FALSE}
+```{r setup, message = FALSE, error=FALSE, warning=FALSE}
 library(quanteda.extras)
 library(quanteda)
 library(tidyverse)
@@ -27,9 +27,47 @@ library(tidyverse)
 
 ## Prepare the data
 
-Let's begin by looking at the frequencies of the bigram *witch hunt* and the plural *witch hunts*, which are available in the package data and come from Google Books.
+Let's begin by preparing the data that comes with the package -- the **sample_corpus**. The corpus contains data from 8 text-types:
+
+* Academic
+* Blog
+* Fiction
+* Magazine
+* News
+* Spoken
+* Television & Movie
+* Web
+
+In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type and each text is only about 2,500 words. Thus, it is also similar to the [Brown family of corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html).
+
+Note that this data is included *only* for demonstration purposes. It was *not* compiled to be used for research.
+
+First, we'll use to **preprocess_text( )** function to "clean" the text data. The  **preprocess_text( )** function takes the following logical (TRUE/FALSE) arguments:
+
+* **contractions** (if set to TRUE contractions will be separated so that, for example, *can't* becomes *ca n't*)
+* **hyphens** (if set to TRUE hyphens will be replaced by spaces)
+* **punctuation** (if set to TRUE all punctuation marks will be exluded)
+* **lower_case** (if set to TRUE all strings are converted to lower case)
+* **accent_replace** (if set to TRUE accented chacaracters will be replaced by unaccented ones)
+* **letters_only** (if set to TRUE strings including non-letters will be eliminated)
 
 ```{r data_prep, , message = FALSE, error=FALSE}
-sc_df$text <- preprocess_text(sc_df$text)
+sc <- sample_corpus %>%
+  mutate(text = preprocess_text(text))
+```
+
+Here is an example of the orignal and the changes we've made:
+
+```{r}
+word(sample_corpus$text[2], 1:20)
+word(sc$text[2], 1:20)
+```
+
+## Create a corpus and tokenize
+
+Next, we'll use [**quanteda**](http://quanteda.io/) to create a corpus and tokenize the data. Many of the functions in  **quanteda.extras** require either a **quanteda tokens** object or a **quanteda dfm** object.
+
+```{r corpus, message = FALSE, error=FALSE, warning=FALSE}
+sc <- corpus(sc) %>% tokens(what="fastestword", remove_numbers=TRUE)
 ```
 
