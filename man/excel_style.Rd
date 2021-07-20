@@ -2,13 +2,16 @@
 % Please edit documentation in R/helper_functions.R
 \name{excel_style}
 \alias{excel_style}
-\title{A function for creating Excel-style column headers}
+\title{A function for expanding letter sequences.}
 \usage{
 excel_style(i)
 }
+\arguments{
+\item{i}{Index of alphabetic character}
+}
 \value{
-A sequence of characters.
+A vector of character combinations in the style of Excel column headers
 }
 \description{
-A function for creating Excel-style column headers
+A function for expanding letter sequences.
 }
