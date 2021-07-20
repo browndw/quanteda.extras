@@ -59,6 +59,7 @@ preprocess_text <- function(txt, contractions=TRUE, hypens=TRUE, punctuation=TRU
 
 #' A function for expanding letter sequences.
 #' @param alphabet An alphabet to be expanded
+#' @export
 extend <- function(alphabet) function(i) {
   base10toA <- function(n, A) {
     stopifnot(n >= 0L)
