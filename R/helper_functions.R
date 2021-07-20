@@ -58,23 +58,18 @@ preprocess_text <- function(txt, contractions=TRUE, hypens=TRUE, punctuation=TRU
 }
 
 #' A function for expanding letter sequences.
-#' @param alphabet An alphabet to be expanded
-#' @return An extended vector
+#' @param i Index of alphabetic character
+#' @return A vector of character combinations in the style of Excel column headers
 #' @export
-extend <- function(alphabet) function(i) {
+excel_style <- function(i) {
   base10toA <- function(n, A) {
     stopifnot(n >= 0L)
     N <- length(A)
     j <- n %/% N 
     if (j == 0L) A[n + 1L] else paste0(Recall(j - 1L, A), A[n %% N + 1L])
   }   
-  vapply(i-1L, base10toA, character(1L), alphabet)
+  vapply(i-1L, base10toA, character(1L), letters)
 }
-
-#' A function for creating Excel-style column headers
-#' @return A sequence of characters.
-#' @export
-excel_style <- quanteda.extras::extend(letters)
 
 #' A function for detecting the size of a corpus and setting the narmalizing factor to the nearest power of 10.
 #' @param corpus_total The total number of words in the corpus
