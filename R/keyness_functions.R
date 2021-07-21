@@ -295,6 +295,7 @@ keyness_table <- function(target_dfm, reference_dfm, yates=FALSE){
   freq_df$PV <- pv
   freq_df <- freq_df[,c(1, 8:10, 2:7)]
   freq_df <- freq_df[order(freq_df[,2], decreasing = TRUE),]
+  rownames(freq_df) <- seq(1:nrow(freq_df))
   return(freq_df)
 }
 

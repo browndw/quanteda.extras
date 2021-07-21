@@ -94,6 +94,6 @@ kt <- keyness_table(sc_fiction, sc_acad)
 ```
 
 ```{r}
-knitr::kable(kt) %>% head()
+knitr::kable(kt[1:10,])
 ```
 
