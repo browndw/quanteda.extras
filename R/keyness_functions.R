@@ -216,7 +216,6 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   colnames(lr) <- lapply(comp_names, function(x) paste(x, "lr", sep = "_"))
   # Calculate p-values
   pv <- as.data.frame(sapply(pair_idx, function(i) {mapply ((function(x) pchisq(abs(x),1,lower.tail=FALSE)), ll[,i])}))
-  pv <- format(round(pv, 5), nsmall = 5)
   # Apply column names
   colnames(pv) <- lapply(comp_names, function(x) paste(x, "pv", sep = "_"))
   # Assemble the table of all values
@@ -289,7 +288,6 @@ keyness_table <- function(target_dfm, reference_dfm, yates=FALSE){
   ll <- quanteda.extras::log_like(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2], correct = yates)
   lr <- quanteda.extras::log_ratio(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2])
   pv <- pchisq(abs(ll),1,lower.tail=FALSE)
-  pv <- format(round(pv, 5), nsmall = 5)
   
   freq_df$LL <- ll
   freq_df$LR <- lr

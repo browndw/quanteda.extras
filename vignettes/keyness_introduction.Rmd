@@ -63,11 +63,37 @@ word(sample_corpus$text[2], 1:20)
 word(sc$text[2], 1:20)
 ```
 
-## Create a corpus and tokenize
+Next, we'll subset the data and create two sub-copora: one of fiction texts and one of academic.
 
-Next, we'll use [**quanteda**](http://quanteda.io/) to create a corpus and tokenize the data. Many of the functions in  **quanteda.extras** require either a **quanteda tokens** object or a **quanteda dfm** object.
+```{r subset, message = FALSE, error=FALSE, warning=FALSE}
+sc_fiction <- sc %>%
+  filter(str_detect(doc_id, "fic")) %>% # select the texts
+  corpus() %>% # create a corpus object
+  tokens(what="fastestword", remove_numbers=TRUE) %>% # tokenize
+  dfm() # create a document-feature matrix (dfm)
 
-```{r corpus, message = FALSE, error=FALSE, warning=FALSE}
-sc <- corpus(sc) %>% tokens(what="fastestword", remove_numbers=TRUE)
+sc_acad <- sc %>%
+  filter(str_detect(doc_id, "acad")) %>% # select the texts
+  corpus() %>% # create a corpus object
+  tokens(what="fastestword", remove_numbers=TRUE) %>% # tokenize
+  dfm() # create a document-feature matrix (dfm)
+```
+
+There are a couple of important issues to be aware of:
+
+1. The **quanteda** package has it's own native keyness function as part of  [**quanteda.textstats**](https://cran.r-project.org/web/packages/quanteda.textstats/index.html): **textstat_keyness( )**.
+1. Using the **textstat_keyness( )** function requires a slightly different workflow, but is perfectly fine if you only want to generate a basic keyness statistic.
+1. The keyness functions here expand that basic functionality by adding effect sizes and other measures, as well as an implementation of **"key key words,"** which accounts for how distributed key words are in the target corpus.
+
+## Generate a keyness table
+
+The **keyness_table( )** takes a target and a reference **dfm**. You can also apply the ["Yates correction"](https://influentialpoints.com/Training/g-likelihood_ratio_test.htm) by setting **yates=TRUE**.
+
+```{r keyness}
+kt <- keyness_table(sc_fiction, sc_acad)
+```
+
+```{r}
+knitr::kable(kt) %>% head()
 ```
 

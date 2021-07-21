@@ -1,5 +1,6 @@
 ---
-title: "collocations_introduction"
+title: "Introduction to collocation functions in the quanteda.extras R package"
+author: "David Brown"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{collocations_introduction}
@@ -14,6 +15,33 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE, error=FALSE, warning=FALSE}
 library(quanteda.extras)
+library(quanteda)
+library(tidyverse)
+library(ggraph)
 ```
+
+
+```{r}
+time_collocations <- collocates_by_MI(brown_tkns, "time")
+money_collocations <- collocates_by_MI(brown_tkns, "money")
+
+tc <- time_collocations %>% filter(col_freq >= 5 & MI_1 >= 5)
+mc <- money_collocations %>% filter(col_freq >= 5 & MI_1 >= 5)
+```
+
+```{r}
+net <- col_network(tc, mc)
+```
+
+```{r}
+ggraph(net, weight = link_weight, layout = "stress") + 
+  geom_edge_link(color = "gray80", alpha = .75) + 
+  geom_node_point(aes(alpha = node_weight, size = 3, color = n_intersects)) +
+  geom_node_text(aes(label = label), repel = T) +
+  scale_alpha(range = c(0.2, 0.9)) +
+  theme_graph() +
+  theme(legend.position="none")
+```
+
