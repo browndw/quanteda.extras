@@ -239,6 +239,7 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
 #' @param reference_dfm The reference document-feature matrix
 #' @param yates A logical value indicating whether the "Yates" correction should be performed
 #' @return A data.frame containing the log-likelihood, log ratio, absolute frequencies, relative frequencies, and dispersions
+#' @export
 keyness_table <- function(target_dfm, reference_dfm, yates=FALSE){
   
   if (class(target_dfm)[1] != "dfm") stop ("Your target must be a quanteda dfm object.")
