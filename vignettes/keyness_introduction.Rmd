@@ -89,11 +89,24 @@ There are a couple of important issues to be aware of:
 
 The **keyness_table( )** takes a target and a reference **dfm**. You can also apply the ["Yates correction"](https://influentialpoints.com/Training/g-likelihood_ratio_test.htm) by setting **yates=TRUE**.
 
-```{r keyness}
+```{r keyness, message = FALSE, error=FALSE, warning=FALSE}
 kt <- keyness_table(sc_fiction, sc_acad)
 ```
 
+We can look at the first few rows of the table:
+
 ```{r}
-knitr::kable(kt[1:10,])
+knitr::kable(head(kt))
 ```
 
+The columns are as follows:
+
+1. **LL**: the keyness value or [**log-likelihood**](http://ucrel.lancs.ac.uk/llwizard.html), also know as a G2 or goodness-of-fit test.
+1. **LR**: the effect size, which here is the [**log ratio**](http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/)
+1. **PV**: the *p*-value associated with the log-likelihood
+1. **AF_Tar**: the absolute frequency in the target corpus
+1. **AF_Ref**: the absolute frequency in the reference corpus
+1. **Per_10.x_Tar**: the relatvie frequency in the target corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
+1. **Per_10.x_Ref**: the relatvie frequency in the reference corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
+1. **DP_Tar**: the [deviation of proportions](https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora) (a dispersion measure) in the target corpus
+1. **DP_Ref**: the deviation of proportions in the reference corpus
