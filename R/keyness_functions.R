@@ -77,7 +77,7 @@ log_ratio <- function (n_target, n_reference, total_target, total_reference) {
 #' @param yates A logical value indicating whether the "Yates" correction should be performed
 #' @return A data.frame containing the percentage of documents reaching significance, mean keyness, and mean effect size
 #' @export
-key_keys <- function (target_dfm, reference_dfm, threshold=c(0.05, 0.01, 0.001, 0.0001), yates=FALSE){
+key_keys <- function(target_dfm, reference_dfm, threshold=c(0.05, 0.01, 0.001, 0.0001), yates=FALSE){
   if (class(target_dfm)[1] != "dfm") stop ("Your target must be a quanteda dfm object.")
   if (class(reference_dfm)[1] != "dfm") stop ("Your reference must be a quanteda dfm object.")
   
@@ -200,7 +200,7 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
     k <- name_pairs[2,i]
     l <- paste(j, k, sep = "_v_")})
   
-  # Calculate G2
+  # Calculate log-likeihood
   ll <- as.data.frame(sapply(pair_idx, function(i) {
     j <- corpora_pairs[1,i]
     k <- corpora_pairs[2,i]
@@ -232,4 +232,70 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   return(key_table)
 }
 
+#' Descriptive measures for all tokens in a corpus
+#' 
+#' The frequency_table() function aggregates useful descriptive measures: absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
+#' 
+#' @param target_dfm The target document-feature matrix
+#' @param reference_dfm The reference document-feature matrix
+#' @param yates A logical value indicating whether the "Yates" correction should be performed
+#' @return A data.frame containing the log-likelihood, log ratio, absolute frequencies, relative frequencies, and dispersions
+keyness_table <- function(target_dfm, reference_dfm, yates=FALSE){
+  
+  if (class(target_dfm)[1] != "dfm") stop ("Your target must be a quanteda dfm object.")
+  if (class(reference_dfm)[1] != "dfm") stop ("Your reference must be a quanteda dfm object.")
+  
+  total_counts <- c(sum(quanteda::ntoken(target_dfm)), sum(quanteda::ntoken(reference_dfm)))
+  nf <- quanteda.extras::normalizing_factor(max(total_counts))
+  
+  freq_table <- function(dfm){
+    
+    m <- as.matrix(dfm)
+    idx <- seq(1:ncol(m))
+    total <- sum(rowSums(m))
+    #calculte the relative sizes of the parts of the corpus (in percent)
+    parts <- rowSums(m)/total
+    
+    dp <- function(v, s=rep(1/length(v))) {
+      
+      n <- length(v) # n
+      f <- sum(v) # f
+      s <- s/sum(s) # s
+      
+      values <- list()
+      values[["AF"]] <- f
+      values[[names(nf)]] <- (f/total)*as.numeric(nf)
+      values[["DP"]] <- sum(abs((v/f)-s))/2
+      values <- as.data.frame(t(as.matrix(unlist(values))))
+      return(values)
+    }
+    
+    dsp <- lapply(idx, function(i){dp(m[,i], parts)})
+    dsp <- data.frame(data.table::rbindlist(dsp))
+    dsp$Token <- colnames(m)
+    dsp <- dsp[order(-dsp$AF),]
+    return(dsp)
+  }
+  
+  target_df <- freq_table(target_dfm)
+  reference_df <- freq_table(reference_dfm)
+  
+  freq_df <- merge(target_df, reference_df, by = "Token", all = T)
+  freq_df <- freq_df[,c(1,2,5,3,6,4,7)]
+  freq_df[,2:5][is.na(freq_df[,2:5])] <- 0
+  colnames(freq_df) <- gsub("\\.x", "_Tar", colnames(freq_df))
+  colnames(freq_df) <- gsub("\\.y", "_Ref", colnames(freq_df))
+  
+  ll <- quanteda.extras::log_like(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2], correct = yates)
+  lr <- quanteda.extras::log_ratio(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2])
+  pv <- pchisq(abs(ll),1,lower.tail=FALSE)
+  pv <- format(round(pv, 5), nsmall = 5)
+  
+  freq_df$LL <- ll
+  freq_df$LR <- lr
+  freq_df$PV <- pv
+  freq_df <- freq_df[,c(1, 8:10, 2:7)]
+  freq_df <- freq_df[order(freq_df[,2], decreasing = TRUE),]
+  return(freq_df)
+}
 
