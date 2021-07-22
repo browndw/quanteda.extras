@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ## Load the quanteda.extras package
@@ -38,7 +39,7 @@ Let's begin by preparing the data that comes with the package -- the **sample_co
 * Television & Movie
 * Web
 
-In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type and each text is only about 2,500 words. Thus, it is also similar to the [Brown family of corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html).
+In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type, and each text is only about 2,500 words. Thus, it is similar to the [Brown family of corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html) in its size (roughly 1 million words).
 
 Note that this data is included *only* for demonstration purposes. It was *not* compiled to be used for research.
 
@@ -66,7 +67,7 @@ word(sc$text[2], 1:20)
 Next, we'll subset the data and create two sub-copora: one of fiction texts and one of academic.
 
 ```{r subset, message = FALSE, error=FALSE, warning=FALSE}
-sc_fiction <- sc %>%
+sc_fict <- sc %>%
   filter(str_detect(doc_id, "fic")) %>% # select the texts
   corpus() %>% # create a corpus object
   tokens(what="fastestword", remove_numbers=TRUE) %>% # tokenize
@@ -90,12 +91,12 @@ There are a couple of important issues to be aware of:
 The **keyness_table( )** takes a target and a reference **dfm**. You can also apply the ["Yates correction"](https://influentialpoints.com/Training/g-likelihood_ratio_test.htm) by setting **yates=TRUE**.
 
 ```{r keyness, message = FALSE, error=FALSE, warning=FALSE}
-kt <- keyness_table(sc_fiction, sc_acad)
+kt <- keyness_table(sc_fict, sc_acad)
 ```
 
 We can look at the first few rows of the table:
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(head(kt))
 ```
 
@@ -110,3 +111,44 @@ The columns are as follows:
 1. **Per_10.x_Ref**: the relatvie frequency in the reference corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
 1. **DP_Tar**: the [deviation of proportions](https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora) (a dispersion measure) in the target corpus
 1. **DP_Ref**: the deviation of proportions in the reference corpus
+
+## Key key words
+
+The concept of ["**key key words**"](https://lexically.net/downloads/version5/HTML/index.html?keykeyness_definition.htm) was introduced by Mike Smith for the WordSmith concordancer. The process comparares each text in the target corpus to the reference corpus. Log-likelihood is calculated for each comparision. Then a mean is calculated for keyness and effect size. In addition, a range is provided for the number of texts in which keyness reaches signficance for a given threshold. (The default is *p* < 0.05.) That range is returned as a percentage.
+
+In this way, **key key words** accounts for the dispersion of key words by indicating whether a keyness value is driven by a relatively high frequency in a few target texts or many.
+
+```{r key_keys, message = FALSE, error=FALSE, warning=FALSE}
+kk <- key_keys(sc_fict, sc_acad)
+```
+
+Again, we can look at the first few rows of the table:
+
+```{r echo=FALSE}
+knitr::kable(head(kk))
+```
+
+## Keyness pairs
+
+There is also a function for quickly generating pair-wise keyness comparisions among multiple sub-corpora. To demonstrate, create a third **dfm**, this time containing news articles.
+
+```{r}
+sc_news <- sc %>%
+  filter(str_detect(doc_id, "news")) %>% # select the texts
+  corpus() %>% # create a corpus object
+  tokens(what="fastestword", remove_numbers=TRUE) %>% # tokenize
+  dfm() # create a document-feature matrix (dfm)
+```
+
+To produce a data.frame comparing more than two sup-corpora, use the **keyness_pairs( )** function:
+
+```{r key_pairs, message = FALSE, error=FALSE, warning=FALSE}
+kp <- keyness_pairs(sc_news, sc_acad, sc_fict)
+```
+
+Check the result:
+
+```{r echo=FALSE}
+knitr::kable(head(kp))
+```
+

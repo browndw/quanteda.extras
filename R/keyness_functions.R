@@ -206,18 +206,18 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
     k <- corpora_pairs[2,i]
     quanteda.extras::log_like(freq_df[,j], freq_df[,k], total_counts[j], total_counts[k], correct = yates)}))
   # Apply column names
-  colnames(ll) <- lapply(comp_names, function(x) paste(x, "ll", sep = "_"))
+  colnames(ll) <- lapply(comp_names, function(x) paste(x, "LL", sep = "_"))
   # Calculate the effect sizes
   lr <- as.data.frame(sapply(pair_idx, function(i) {
     j <- corpora_pairs[1,i]
     k <- corpora_pairs[2,i]
     quanteda.extras::log_ratio(freq_df[,j], freq_df[,k], total_counts[j], total_counts[k])}))
   # Apply column names
-  colnames(lr) <- lapply(comp_names, function(x) paste(x, "lr", sep = "_"))
+  colnames(lr) <- lapply(comp_names, function(x) paste(x, "LR", sep = "_"))
   # Calculate p-values
   pv <- as.data.frame(sapply(pair_idx, function(i) {mapply ((function(x) pchisq(abs(x),1,lower.tail=FALSE)), ll[,i])}))
   # Apply column names
-  colnames(pv) <- lapply(comp_names, function(x) paste(x, "pv", sep = "_"))
+  colnames(pv) <- lapply(comp_names, function(x) paste(x, "PV", sep = "_"))
   # Assemble the table of all values
   key_table <- cbind(ll, lr, pv)
   # Order by names
@@ -226,7 +226,7 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   rownames(key_table) <- rownames(freq_df)
   # Reorder by the first column
   key_table <- key_table[order(key_table[,1], decreasing = TRUE),]
-  key_table <- tibble::rownames_to_column(key_table, "token")
+  key_table <- tibble::rownames_to_column(key_table, "Token")
   # Return the table
   return(key_table)
 }

@@ -134,13 +134,14 @@ dispersions_all <- function(target_dfm) {
   dsp$Token <- colnames(m)
   dsp <- dplyr::select(dsp, Token, everything())
   dsp <- dsp[order(-dsp$AF),]
+  rownames(dsp) <- seq(1:nrow(dsp))
   return(dsp)
 }
 
 #' Average reduced frequencies for all tokens in a corpus
 #' 
 #' ARF calculates average reduced frequency, which combines dispersion and frequency into a single measure.
-#' It does this by demphasizing occurrences that appear clustered in close proximity.
+#' It does this by de-emphasizing occurrences that appear clustered in close proximity.
 #' 
 #' @param target_tkns The target quanteda tokens object.
 #' @return A data.frame containing average reduced frequency for each token.

@@ -68,7 +68,7 @@ excel_style <- function(i) {
     j <- n %/% N 
     if (j == 0L) A[n + 1L] else paste0(Recall(j - 1L, A), A[n %% N + 1L])
   }   
-  vapply(i-1L, base10toA, character(1L), letters)
+  vapply(i-1L, base10toA, character(1L), LETTERS)
 }
 
 #' A function for detecting the size of a corpus and setting the narmalizing factor to the nearest power of 10.
