@@ -14,5 +14,5 @@ A data.frame containing average reduced frequency for each token.
 }
 \description{
 ARF calculates average reduced frequency, which combines dispersion and frequency into a single measure.
-It does this by demphasizing occurrences that appear clustered in close proximity.
+It does this by de-emphasizing occurrences that appear clustered in close proximity.
 }

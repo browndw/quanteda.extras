@@ -33,10 +33,10 @@ readtext_lite <- function(paths) {
 #' @param punctuation A logical value to remove punctuation
 #' @param lower_case A logical value to make all tokens lower case
 #' @param accent_replace A logical value to replace accented characters with un-accented ones
-#' @param letters_only A logical value to extract only letter sequences
+#' @param remove_numbers A logical value to remove numbers
 #' @return A character vector
 #' @export
-preprocess_text <- function(txt, contractions=TRUE, hypens=TRUE, punctuation=TRUE, lower_case=TRUE, accent_replace=TRUE, letters_only=FALSE){
+preprocess_text <- function(txt, contractions=TRUE, hypens=TRUE, punctuation=TRUE, lower_case=TRUE, accent_replace=TRUE, remove_numbers=FALSE){
   cont_replace <- function(x) {
     x <- gsub( "'s\\b", " 's", x)
     x <- gsub( "n't\\b", " n't", x)
@@ -53,7 +53,7 @@ preprocess_text <- function(txt, contractions=TRUE, hypens=TRUE, punctuation=TRU
   if (hypens==TRUE) txt <- gsub( "-", " ", txt)
   if (punctuation==TRUE) txt <- gsub( "(?:(?<![A-Za-z0-9])[[:punct:]]+)|(?:[[:punct:]]+(?![A-Za-z0-9]))", "", txt, perl = T)
   if (accent_replace==TRUE) txt <- stringi::stri_trans_general(txt, "Latin-ASCII")
-  if (letters_only==TRUE) txt <- sapply(stringr::str_extract_all(txt, "\\b[A-Za-z]+\\b"), paste, collapse=" ")
+  if (letters_only==TRUE) txt <- stringr::str_remove_all(txt, "\\b[0-9]+\\b")
   txt <- stringr::str_squish(txt)
 }
 

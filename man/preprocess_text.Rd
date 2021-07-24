@@ -11,7 +11,7 @@ preprocess_text(
   punctuation = TRUE,
   lower_case = TRUE,
   accent_replace = TRUE,
-  letters_only = FALSE
+  remove_numbers = FALSE
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ preprocess_text(
 
 \item{accent_replace}{A logical value to replace accented characters with un-accented ones}
 
-\item{letters_only}{A logical value to extract only letter sequences}
+\item{remove_numbers}{A logical value to remove numbers}
 }
 \value{
 A character vector
