@@ -37,15 +37,25 @@ The  **preprocess_text( )** function takes the following logical (TRUE/FALSE) ar
 ### contractions:
 
 ```{r contractions}
-preprocess_text("can't won't we'll its' it's") %>% knitr::kable(col.names = "")
-preprocess_text("can't won't we'll its' it's", contractions = FALSE) %>% knitr::kable(col.names = "")
+a <- preprocess_text("can't won't we'll its' it's")
+b <- preprocess_text("can't won't we'll its' it's", contractions = FALSE)
+```
+
+```{r echo=FALSE}
+knitr::kable(a, col.names = "TRUE")
+knitr::kable(b, col.names = "FALSE")
 ```
 
 ### hyphens:
 
 ```{r}
-cat(preprocess_text("un-knowable bluish-gray slo-mo"))
-cat(preprocess_text("un-knowable bluish-gray slo-mo slo-", hypens = FALSE))
+a <- preprocess_text("un-knowable bluish-gray slo-mo")
+b <- preprocess_text("un-knowable bluish-gray slo-mo slo-", hypens = FALSE)
+```
+
+```{r echo=FALSE}
+knitr::kable(a, col.names = "TRUE")
+knitr::kable(b, col.names = "FALSE")
 ```
 
 

@@ -51,9 +51,9 @@ preprocess_text <- function(txt, contractions=TRUE, hypens=TRUE, punctuation=TRU
   if (contractions==TRUE) txt <- cont_replace(txt)
   if (lower_case==TRUE) txt <- tolower(txt)
   if (hypens==TRUE) txt <- gsub( "-", " ", txt)
+  if (remove_numbers==TRUE) txt <- stringr::str_remove_all(txt, "\\b[0-9]+\\b")
   if (punctuation==TRUE) txt <- gsub( "(?:(?<![A-Za-z0-9])[[:punct:]]+)|(?:[[:punct:]]+(?![A-Za-z0-9]))", "", txt, perl = T)
   if (accent_replace==TRUE) txt <- stringi::stri_trans_general(txt, "Latin-ASCII")
-  if (remove_numbers==TRUE) txt <- stringr::str_remove_all(txt, "\\b[0-9]+\\b")
   txt <- stringr::str_squish(txt)
 }
 
