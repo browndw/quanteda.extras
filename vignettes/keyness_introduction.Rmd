@@ -28,31 +28,11 @@ library(tidyverse)
 
 ## Prepare the data
 
-Let's begin by preparing the data that comes with the package -- the **sample_corpus**. The corpus contains data from 8 text-types:
+## Prepare the data
 
-* Academic
-* Blog
-* Fiction
-* Magazine
-* News
-* Spoken
-* Television & Movie
-* Web
+First, we'll use to **preprocess_text( )** function to "clean" the text data. See the **preprocess vignette** for more information.
 
-In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type, and each text is only about 2,500 words. Thus, it is similar to the [Brown family of corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html) in its size (roughly 1 million words).
-
-Note that this data is included *only* for demonstration purposes. It was *not* compiled to be used for research.
-
-First, we'll use to **preprocess_text( )** function to "clean" the text data. The  **preprocess_text( )** function takes the following logical (TRUE/FALSE) arguments:
-
-* **contractions** (if set to TRUE contractions will be separated so that, for example, *can't* becomes *ca n't*)
-* **hyphens** (if set to TRUE hyphens will be replaced by spaces)
-* **punctuation** (if set to TRUE all punctuation marks will be exluded)
-* **lower_case** (if set to TRUE all strings are converted to lower case)
-* **accent_replace** (if set to TRUE accented chacaracters will be replaced by unaccented ones)
-* **letters_only** (if set to TRUE strings including non-letters will be eliminated)
-
-```{r data_prep, , message = FALSE, error=FALSE}
+```{r data_prep, message = FALSE, error=FALSE}
 sc <- sample_corpus %>%
   mutate(text = preprocess_text(text))
 ```

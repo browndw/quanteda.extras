@@ -1,0 +1,65 @@
+---
+title: "Introduction to collocation functions in the quanteda.extras R package"
+author: "David Brown"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{preprocess_introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+
+```{r setup, message = FALSE, error=FALSE, warning=FALSE}
+library(quanteda.extras)
+library(tidyverse)
+```
+
+
+## Preprocessing
+
+The  **preprocess_text( )** function takes the following logical (TRUE/FALSE) arguments:
+
+* **contractions** (if set to TRUE contractions will be separated so that, for example, *can't* becomes *ca n't*)
+* **hyphens** (if set to TRUE hyphens will be replaced by spaces)
+* **punctuation** (if set to TRUE all punctuation marks will be exluded)
+* **lower_case** (if set to TRUE all strings are converted to lower case)
+* **accent_replace** (if set to TRUE accented chacaracters will be replaced by unaccented ones)
+* **letters_only** (if set to TRUE strings including non-letters will be eliminated)
+
+### contractions:
+
+```{r contractions}
+preprocess_text("can't won't we'll its' it's") %>% knitr::kable(col.names = "")
+preprocess_text("can't won't we'll its' it's", contractions = FALSE) %>% knitr::kable(col.names = "")
+```
+
+### hyphens:
+
+```{r}
+cat(preprocess_text("un-knowable bluish-gray slo-mo"))
+cat(preprocess_text("un-knowable bluish-gray slo-mo slo-", hypens = FALSE))
+```
+
+
+The package comes with a small corpus -- the **sample_corpus**. The corpus contains data from 8 text-types:
+
+* Academic
+* Blog
+* Fiction
+* Magazine
+* News
+* Spoken
+* Television & Movie
+* Web
+
+In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type, and each text is only about 2,500 words. Thus, it is similar to the [Brown family of corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html) in its size (roughly 1 million words).
+
+Note that this data is included *only* for demonstration purposes. It was *not* compiled to be used for research.
