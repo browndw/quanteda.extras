@@ -67,9 +67,9 @@ knitr::kable(head(ft))
 
 A data.frame of common dispersion measures can be generated using the **dispersions_all( )** function. The table includes:
 
-* Carroll's *D*2
+* Carroll's *D*<sub>2</sub>
 * Rosengren's *S*
-* Lyne's *D*3
+* Lyne's *D*<sub>3</sub>
 * Distributional Consistency (DC)
 * Juilland' *D*
 * Deviation of Proportions
@@ -93,7 +93,9 @@ knitr::kable(head(dt))
 The **dispersions_token( )** function calculates the dispersion measures for a single token. It returns a named list with all of the dispersion measures discussed by [S.T. Gries](http://www.stgries.info/research/dispersion/links.html) and the function is baesed on a script he originally authored.
 
 ```{r disp_token}
-dispersions_token(sc_dfm, "data")
+dispersions_token(sc_dfm, "data") %>%
+  unlist() %>% 
+  knitr::kable(col.names = "")
 ```
 
 
