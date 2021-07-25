@@ -2,6 +2,10 @@
 title: "Introduction to dispersion functions in the quanteda.extras R package"
 author: "David Brown"
 output: rmarkdown::html_vignette
+bibliography: dispersion_bib.bib
+link-citations: yes
+nocite: |
+  @*
 vignette: >
   %\VignetteIndexEntry{dispersions_introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -93,9 +97,15 @@ knitr::kable(head(dt))
 The **dispersions_token( )** function calculates the dispersion measures for a single token. It returns a named list with all of the dispersion measures discussed by [S.T. Gries](http://www.stgries.info/research/dispersion/links.html) and the function is baesed on a script he originally authored.
 
 ```{r disp_token}
-dispersions_token(sc_dfm, "data") %>%
+a <- dispersions_token(sc_dfm, "data")
+```
+
+
+```{r echo=FALSE}
+a %>%
   unlist() %>% 
   knitr::kable(col.names = "")
 ```
 
 
+## Bibliography

@@ -1,5 +1,5 @@
 ---
-title: "Introduction to collocation functions in the quanteda.extras R package"
+title: "Introduction to pre-processing functions in the quanteda.extras R package"
 author: "David Brown"
 output: rmarkdown::html_vignette
 vignette: >
@@ -32,7 +32,7 @@ The  **preprocess_text( )** function takes the following logical (TRUE/FALSE) ar
 * **punctuation** (if set to TRUE all punctuation marks will be exluded)
 * **lower_case** (if set to TRUE all strings are converted to lower case)
 * **accent_replace** (if set to TRUE accented chacaracters will be replaced by unaccented ones)
-* **letters_only** (if set to TRUE strings including non-letters will be eliminated)
+* **remove_numers** (if set to TRUE strings made up of numbers will be eliminated)
 
 ### contractions:
 
@@ -49,8 +49,8 @@ knitr::kable(b, col.names = "FALSE")
 ### hyphens:
 
 ```{r}
-a <- preprocess_text("un-knowable bluish-gray slo-mo")
-b <- preprocess_text("un-knowable bluish-gray slo-mo slo-", hypens = FALSE)
+a <- preprocess_text("un-knowable bluish-gray slo-mo stop-")
+b <- preprocess_text("un-knowable bluish-gray slo-mo stop-", hypens = FALSE)
 ```
 
 ```{r echo=FALSE}
@@ -58,6 +58,61 @@ knitr::kable(a, col.names = "TRUE")
 knitr::kable(b, col.names = "FALSE")
 ```
 
+### punctuation:
+
+```{r}
+a <- preprocess_text("u.k. 50% 'cat' #great now?")
+b <- preprocess_text("u.k. 50% 'cat' #great now?", punctuation = FALSE)
+```
+
+```{r echo=FALSE}
+knitr::kable(a, col.names = "TRUE")
+knitr::kable(b, col.names = "FALSE")
+```
+
+### lower_case:
+
+```{r}
+a <- preprocess_text("U.K. This A-1 1-A")
+b <- preprocess_text("U.K. This A-1 1-A", lower_case = FALSE)
+```
+
+```{r echo=FALSE}
+knitr::kable(a, col.names = "TRUE")
+knitr::kable(b, col.names = "FALSE")
+```
+
+### accent_replace:
+
+```{r}
+a <- preprocess_text("fiancée naïve façade")
+b <- preprocess_text("fiancée naïve façade", accent_replace = FALSE)
+```
+
+```{r echo=FALSE}
+knitr::kable(a, col.names = "TRUE")
+knitr::kable(b, col.names = "FALSE")
+```
+
+### remove_numbers:
+
+```{r}
+a <- preprocess_text("a-1 b2 50% 99 10,000", remove_numbers = TRUE)
+b <- preprocess_text("a-1 50% 99 10,000")
+```
+
+```{r echo=FALSE}
+knitr::kable(a, col.names = "TRUE")
+knitr::kable(b, col.names = "FALSE")
+```
+
+Note that these options represent some procedures that are common when "cleaning" texts. They give additional control over how a corpus is later "tokenized". These are *not* intended to be comprehensive. Depending on one's data there may be other, specific ways a corpus needs to be processed prior to tokenizing.
+
+The [**textclean**](https://github.com/trinker/textclean) package offers a host of options for pre-processing tasks. In addition, the [**tokens( )**](http://quanteda.io/reference/tokens.html) function in **quanteda** has a variety of built-in options, some similar to the ones described above.
+
+And, of course, one can use either native R **gsub( )** or [**stringr**](https://stringr.tidyverse.org/) **tidyverse** to create task-specific text processing functions.
+
+## Sample corpus
 
 The package comes with a small corpus -- the **sample_corpus**. The corpus contains data from 8 text-types:
 
@@ -73,3 +128,16 @@ The package comes with a small corpus -- the **sample_corpus**. The corpus conta
 In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type, and each text is only about 2,500 words. Thus, it is similar to the [Brown family of corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html) in its size (roughly 1 million words).
 
 Note that this data is included *only* for demonstration purposes. It was *not* compiled to be used for research.
+
+```{r}
+sc <- sample_corpus %>%
+  mutate(text_type = str_extract(doc_id, "[a-z]+")) %>%
+  group_by(text_type) %>%
+  tally()
+```
+
+
+```{r echo=FALSE}
+knitr::kable(sc)
+```
+

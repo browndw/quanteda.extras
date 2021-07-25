@@ -2,6 +2,10 @@
 title: "Introduction to keyness functions in the quanteda.extras R package"
 author: "David Brown"
 output: rmarkdown::html_vignette
+bibliography: keyness_bib.bib
+link-citations: yes
+nocite: |
+  @*
 vignette: >
   %\VignetteIndexEntry{keyness_introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -82,7 +86,7 @@ The columns are as follows:
 1. **AF_Ref**: the absolute frequency in the reference corpus
 1. **Per_10.x_Tar**: the relatvie frequency in the target corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
 1. **Per_10.x_Ref**: the relatvie frequency in the reference corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
-1. **DP_Tar**: the [deviation of proportions](https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora) (a dispersion measure) in the target corpus
+1. **DP_Tar**: the [**deviation of proportions**](https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora) (a dispersion measure) in the target corpus
 1. **DP_Ref**: the deviation of proportions in the reference corpus
 
 ## Key key words
@@ -125,3 +129,4 @@ Check the result:
 knitr::kable(head(kp))
 ```
 
+## Bibliography

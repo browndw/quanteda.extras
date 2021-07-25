@@ -2,6 +2,10 @@
 title: "Introduction to collocation functions in the quanteda.extras R package"
 author: "David Brown"
 output: rmarkdown::html_vignette
+bibliography: collocation_bib.bib
+link-citations: yes
+nocite: |
+  @*
 vignette: >
   %\VignetteIndexEntry{collocations_introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -48,6 +52,8 @@ sc_tokens <- sc %>%
 
 The **collocates_by_MI( )** function produces collocation measures (by pointwise mutual information) for a specified token in a **quanteda tokens** object. In addition to a token, a span or window (as given by a number of words to the **left** and **right** of the **node word**) is required. The default is 5 to the left and 5 to the right.
 
+We'll start by making a table of tokens that collocate with the token *money*.
+
 ```{r coll_money}
 money_collocations <- collocates_by_MI(sc_tokens, "money")
 ```
@@ -58,26 +64,63 @@ Check the result:
 knitr::kable(head(money_collocations))
 ```
 
+Now, let's make a similar table for collocates of *time*.
 
-```{r}
-time_collocations <- collocates_by_MI(brown_tkns, "time")
+```{r coll_time}
+time_collocations <- collocates_by_MI(sc_tokens, "time")
+```
 
+
+```{r echo=FALSE}
+knitr::kable(head(money_collocations))
+```
+
+As is clear from the above table, MI is sensitive to rare/infrequent words. Because of that sensitivity, it commmon to make thresholds for both token frequency (absolute frequency) and MI score (ususally at some value ≥ 3).
+
+For our purposes, we'll filter for AF ≥ 5 and MI ≥ 5.
+
+```{r filter}
 tc <- time_collocations %>% filter(col_freq >= 5 & MI_1 >= 5)
 mc <- money_collocations %>% filter(col_freq >= 5 & MI_1 >= 5)
 ```
 
+Check the result:
 
-```{r}
+```{r echo=FALSE}
+knitr::kable(head(tc))
+```
+
+```{r echo=FALSE}
+knitr::kable(head(mc))
+```
+
+## Create a tbl_graph object for plotting
+
+A [**tbl_graph**](https://www.data-imaginist.com/2017/introducing-tidygraph/) is a data structure for **tidyvers** (ggplot2) network plotting.
+
+For this, we'll use the **col_network( )** function.
+
+```{r net}
 net <- col_network(tc, mc)
 ```
 
-```{r}
+
+## Plot network
+
+The network plot shows the tokens that distinctly collocate with either *time* or *money*, as well as those that interect. The distance from the central tokens (*time* and *money*) is governed by the MI score and the transparency (or alpha) is governed by the token frequency.
+
+The aesthetic details of the plot can be manipulated in the various **ggraph** options.
+
+```{r net_plot, message = FALSE, fig.width = 7, fig.height=4}
 ggraph(net, weight = link_weight, layout = "stress") + 
   geom_edge_link(color = "gray80", alpha = .75) + 
   geom_node_point(aes(alpha = node_weight, size = 3, color = n_intersects)) +
-  geom_node_text(aes(label = label), repel = T) +
+  geom_node_text(aes(label = label), repel = T, size = 3) +
   scale_alpha(range = c(0.2, 0.9)) +
   theme_graph() +
   theme(legend.position="none")
 ```
+
+## Bibliography
+
 
