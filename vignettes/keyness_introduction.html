@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="David Brown" />
+
+
+<title>Introduction to keyness functions in the quanteda.extras R package</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to keyness functions in the quanteda.extras R package</h1>
+<h4 class="author">David Brown</h4>
+
+
+
+<div id="load-the-quanteda.extras-package" class="section level2">
+<h2>Load the quanteda.extras package</h2>
+<p>Load the package, as well as others that we’ll use in this vignette.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(quanteda.extras)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(quanteda)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(tidyverse)</span></code></pre></div>
+</div>
+<div id="prepare-the-data" class="section level2">
+<h2>Prepare the data</h2>
+</div>
+<div id="prepare-the-data-1" class="section level2">
+<h2>Prepare the data</h2>
+<p>First, we’ll use to <strong>preprocess_text( )</strong> function to “clean” the text data. See the <strong>preprocess vignette</strong> for more information.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>sc &lt;-<span class="st"> </span>sample_corpus <span class="op">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">text =</span> <span class="kw">preprocess_text</span>(text))</span></code></pre></div>
+<p>Next, we’ll subset the data and create two sub-copora: one of fiction texts and one of academic.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>sc_fict &lt;-<span class="st"> </span>sc <span class="op">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(doc_id, <span class="st">&quot;fic&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># select the texts</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="st">  </span><span class="kw">corpus</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># create a corpus object</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="st">  </span><span class="kw">tokens</span>(<span class="dt">what=</span><span class="st">&quot;fastestword&quot;</span>, <span class="dt">remove_numbers=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># tokenize</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="st">  </span><span class="kw">dfm</span>() <span class="co"># create a document-feature matrix (dfm)</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>sc_acad &lt;-<span class="st"> </span>sc <span class="op">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(doc_id, <span class="st">&quot;acad&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># select the texts</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="st">  </span><span class="kw">corpus</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># create a corpus object</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="st">  </span><span class="kw">tokens</span>(<span class="dt">what=</span><span class="st">&quot;fastestword&quot;</span>, <span class="dt">remove_numbers=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># tokenize</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="st">  </span><span class="kw">dfm</span>() <span class="co"># create a document-feature matrix (dfm)</span></span></code></pre></div>
+<p>There are a couple of important issues to be aware of:</p>
+<ol style="list-style-type: decimal">
+<li>The <strong>quanteda</strong> package has it’s own native keyness function as part of <a href="https://cran.r-project.org/web/packages/quanteda.textstats/index.html"><strong>quanteda.textstats</strong></a>: <strong>textstat_keyness( )</strong>.</li>
+<li>Using the <strong>textstat_keyness( )</strong> function requires a slightly different workflow, but is perfectly fine if you only want to generate a basic keyness statistic.</li>
+<li>The keyness functions here expand that basic functionality by adding effect sizes and other measures, as well as an implementation of <strong>“key key words,”</strong> which accounts for how distributed key words are in the target corpus.</li>
+</ol>
+</div>
+<div id="generate-a-keyness-table" class="section level2">
+<h2>Generate a keyness table</h2>
+<p>The <strong>keyness_table( )</strong> takes a target and a reference <strong>dfm</strong>. You can also apply the <a href="https://influentialpoints.com/Training/g-likelihood_ratio_test.htm">“Yates correction”</a> by setting <strong>yates=TRUE</strong>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>kt &lt;-<span class="st"> </span><span class="kw">keyness_table</span>(sc_fict, sc_acad)</span></code></pre></div>
+<p>We can look at the first few rows of the table:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Token</th>
+<th align="right">LL</th>
+<th align="right">LR</th>
+<th align="right">PV</th>
+<th align="right">AF_Tar</th>
+<th align="right">AF_Ref</th>
+<th align="right">Per_10.5_Tar</th>
+<th align="right">Per_10.5_Ref</th>
+<th align="right">DP_Tar</th>
+<th align="right">DP_Ref</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">i</td>
+<td align="right">2336.3687</td>
+<td align="right">4.006427</td>
+<td align="right">0</td>
+<td align="right">2428</td>
+<td align="right">143</td>
+<td align="right">1867.1322</td>
+<td align="right">116.17704</td>
+<td align="right">0.3242046</td>
+<td align="right">0.5431349</td>
+</tr>
+<tr class="even">
+<td align="left">she</td>
+<td align="right">1855.0335</td>
+<td align="right">4.575279</td>
+<td align="right">0</td>
+<td align="right">1763</td>
+<td align="right">70</td>
+<td align="right">1355.7471</td>
+<td align="right">56.86988</td>
+<td align="right">0.3747662</td>
+<td align="right">0.7893475</td>
+</tr>
+<tr class="odd">
+<td align="left">he</td>
+<td align="right">1691.4745</td>
+<td align="right">3.461181</td>
+<td align="right">0</td>
+<td align="right">1978</td>
+<td align="right">170</td>
+<td align="right">1521.0821</td>
+<td align="right">138.11257</td>
+<td align="right">0.2638247</td>
+<td align="right">0.5816552</td>
+</tr>
+<tr class="even">
+<td align="left">her</td>
+<td align="right">1448.8023</td>
+<td align="right">3.826711</td>
+<td align="right">0</td>
+<td align="right">1559</td>
+<td align="right">104</td>
+<td align="right">1198.8711</td>
+<td align="right">84.49240</td>
+<td align="right">0.3796376</td>
+<td align="right">0.7746659</td>
+</tr>
+<tr class="odd">
+<td align="left">you</td>
+<td align="right">1358.5514</td>
+<td align="right">4.605564</td>
+<td align="right">0</td>
+<td align="right">1286</td>
+<td align="right">50</td>
+<td align="right">988.9341</td>
+<td align="right">40.62134</td>
+<td align="right">0.2354467</td>
+<td align="right">0.7578357</td>
+</tr>
+<tr class="even">
+<td align="left">n’t</td>
+<td align="right">928.6952</td>
+<td align="right">4.330531</td>
+<td align="right">0</td>
+<td align="right">914</td>
+<td align="right">43</td>
+<td align="right">702.8661</td>
+<td align="right">34.93436</td>
+<td align="right">0.2028021</td>
+<td align="right">0.7417701</td>
+</tr>
+</tbody>
+</table>
+<p>The columns are as follows:</p>
+<ol style="list-style-type: decimal">
+<li><strong>LL</strong>: the keyness value or <a href="http://ucrel.lancs.ac.uk/llwizard.html"><strong>log-likelihood</strong></a>, also know as a G2 or goodness-of-fit test.</li>
+<li><strong>LR</strong>: the effect size, which here is the <a href="http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/"><strong>log ratio</strong></a></li>
+<li><strong>PV</strong>: the <em>p</em>-value associated with the log-likelihood</li>
+<li><strong>AF_Tar</strong>: the absolute frequency in the target corpus</li>
+<li><strong>AF_Ref</strong>: the absolute frequency in the reference corpus</li>
+<li><strong>Per_10.x_Tar</strong>: the relatvie frequency in the target corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)</li>
+<li><strong>Per_10.x_Ref</strong>: the relatvie frequency in the reference corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)</li>
+<li><strong>DP_Tar</strong>: the <a href="https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora"><strong>deviation of proportions</strong></a> (a dispersion measure) in the target corpus</li>
+<li><strong>DP_Ref</strong>: the deviation of proportions in the reference corpus</li>
+</ol>
+</div>
+<div id="key-key-words" class="section level2">
+<h2>Key key words</h2>
+<p>The concept of <a href="https://lexically.net/downloads/version5/HTML/index.html?keykeyness_definition.htm">“<strong>key key words</strong>”</a> was introduced by Mike Smith for the WordSmith concordancer. The process comparares each text in the target corpus to the reference corpus. Log-likelihood is calculated for each comparision. Then a mean is calculated for keyness and effect size. In addition, a range is provided for the number of texts in which keyness reaches signficance for a given threshold. (The default is <em>p</em> &lt; 0.05.) That range is returned as a percentage.</p>
+<p>In this way, <strong>key key words</strong> accounts for the dispersion of key words by indicating whether a keyness value is driven by a relatively high frequency in a few target texts or many.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>kk &lt;-<span class="st"> </span><span class="kw">key_keys</span>(sc_fict, sc_acad)</span></code></pre></div>
+<p>Again, we can look at the first few rows of the table:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">token</th>
+<th align="right">key_range</th>
+<th align="right">key_mean</th>
+<th align="right">key_sd</th>
+<th align="right">effect_mean</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">i</td>
+<td align="right">92</td>
+<td align="right">187.15374</td>
+<td align="right">177.06824</td>
+<td align="right">3.375994</td>
+</tr>
+<tr class="even">
+<td align="left">she</td>
+<td align="right">78</td>
+<td align="right">163.11509</td>
+<td align="right">179.51970</td>
+<td align="right">3.446611</td>
+</tr>
+<tr class="odd">
+<td align="left">he</td>
+<td align="right">90</td>
+<td align="right">124.38986</td>
+<td align="right">104.13721</td>
+<td align="right">3.012114</td>
+</tr>
+<tr class="even">
+<td align="left">her</td>
+<td align="right">78</td>
+<td align="right">119.87934</td>
+<td align="right">131.16379</td>
+<td align="right">2.773899</td>
+</tr>
+<tr class="odd">
+<td align="left">you</td>
+<td align="right">96</td>
+<td align="right">110.76772</td>
+<td align="right">94.19243</td>
+<td align="right">4.298598</td>
+</tr>
+<tr class="even">
+<td align="left">n’t</td>
+<td align="right">94</td>
+<td align="right">72.22032</td>
+<td align="right">47.96801</td>
+<td align="right">4.087920</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="keyness-pairs" class="section level2">
+<h2>Keyness pairs</h2>
+<p>There is also a function for quickly generating pair-wise keyness comparisions among multiple sub-corpora. To demonstrate, create a third <strong>dfm</strong>, this time containing news articles.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>sc_news &lt;-<span class="st"> </span>sc <span class="op">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(doc_id, <span class="st">&quot;news&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># select the texts</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="st">  </span><span class="kw">corpus</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># create a corpus object</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="st">  </span><span class="kw">tokens</span>(<span class="dt">what=</span><span class="st">&quot;fastestword&quot;</span>, <span class="dt">remove_numbers=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># tokenize</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="st">  </span><span class="kw">dfm</span>() <span class="co"># create a document-feature matrix (dfm)</span></span></code></pre></div>
+<p>To produce a data.frame comparing more than two sup-corpora, use the <strong>keyness_pairs( )</strong> function:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>kp &lt;-<span class="st"> </span><span class="kw">keyness_pairs</span>(sc_news, sc_acad, sc_fict)</span></code></pre></div>
+<p>Check the result:</p>
+<table>
+<colgroup>
+<col width="6%"></col>
+<col width="9%"></col>
+<col width="9%"></col>
+<col width="9%"></col>
+<col width="12%"></col>
+<col width="11%"></col>
+<col width="10%"></col>
+<col width="12%"></col>
+<col width="10%"></col>
+<col width="9%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Token</th>
+<th align="right">A_v_B_LL</th>
+<th align="right">A_v_B_LR</th>
+<th align="right">A_v_B_PV</th>
+<th align="right">A_v_C_LL</th>
+<th align="right">A_v_C_LR</th>
+<th align="right">A_v_C_PV</th>
+<th align="right">B_v_C_LL</th>
+<th align="right">B_v_C_LR</th>
+<th align="right">B_v_C_PV</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">he</td>
+<td align="right">493.5483</td>
+<td align="right">2.326763</td>
+<td align="right">0</td>
+<td align="right">-394.963211</td>
+<td align="right">-1.1344187</td>
+<td align="right">0.0000000</td>
+<td align="right">-1691.47454</td>
+<td align="right">-3.461181</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">said</td>
+<td align="right">456.3626</td>
+<td align="right">3.691213</td>
+<td align="right">0</td>
+<td align="right">1.925817</td>
+<td align="right">0.1296518</td>
+<td align="right">0.1652169</td>
+<td align="right">-415.45402</td>
+<td align="right">-3.561561</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">i</td>
+<td align="right">432.3058</td>
+<td align="right">2.360219</td>
+<td align="right">0</td>
+<td align="right">-854.228933</td>
+<td align="right">-1.6462082</td>
+<td align="right">0.0000000</td>
+<td align="right">-2336.36875</td>
+<td align="right">-4.006427</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">n’t</td>
+<td align="right">333.8795</td>
+<td align="right">3.231694</td>
+<td align="right">0</td>
+<td align="right">-173.379610</td>
+<td align="right">-1.0988371</td>
+<td align="right">0.0000000</td>
+<td align="right">-928.69517</td>
+<td align="right">-4.330531</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">you</td>
+<td align="right">328.3448</td>
+<td align="right">3.064351</td>
+<td align="right">0</td>
+<td align="right">-411.300060</td>
+<td align="right">-1.5412134</td>
+<td align="right">0.0000000</td>
+<td align="right">-1358.55143</td>
+<td align="right">-4.605564</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">mr</td>
+<td align="right">237.0320</td>
+<td align="right">5.098339</td>
+<td align="right">0</td>
+<td align="right">75.198530</td>
+<td align="right">1.6128090</td>
+<td align="right">0.0000000</td>
+<td align="right">-61.08761</td>
+<td align="right">-3.485530</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="bibliography" class="section level2 unnumbered">
+<h2>Bibliography</h2>
+<div id="refs" class="references">
+<div id="ref-hlavavcova2006new">
+<p>Hlaváčová, J. 2006. “New Approach to Frequency Dictionaries—Czech Example. 2006.” In <em>Paper till the International Conference on Language Resources</em>.</p>
+</div>
+<div id="ref-rayson2000comparing">
+<p>Rayson, Paul, and Roger Garside. 2000. “Comparing Corpora Using Frequency Profiling.” In <em>The Workshop on Comparing Corpora</em>, 1–6. <a href="https://aclanthology.org/W00-0901.pdf">https://aclanthology.org/W00-0901.pdf</a>.</p>
+</div>
+<div id="ref-savicky2002measures">
+<p>Savickỳ, Petr, and Jaroslava Hlavácová. 2002. “Measures of Word Commonness.” <em>Journal of Quantitative Linguistics</em> 9 (3): 215–31. <a href="https://www.tandfonline.com/doi/abs/10.1076/jqul.9.3.215.14124">https://www.tandfonline.com/doi/abs/10.1076/jqul.9.3.215.14124</a>.</p>
+</div>
+<div id="ref-scott1997pc">
+<p>Scott, Mike. 1997. “PC Analysis of Key Words—and Key Key Words.” <em>System</em> 25 (2): 233–45. <a href="https://www.sciencedirect.com/science/article/abs/pii/S0346251X97000110">https://www.sciencedirect.com/science/article/abs/pii/S0346251X97000110</a>.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
