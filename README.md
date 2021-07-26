@@ -18,6 +18,8 @@ devtools::install_github("browndw/quanteda.extras")
 
 ## Using quanteda.extras
 
+The primary functions included in quanteda.extras are listed in the table below, with links to more detailed vignettes.
+
 <table><tbody><tr><td><b>Pre-processing text</b> 
      </td>
 <td><a href=http://htmlpreview.github.io/?https://raw.githubusercontent.com/browndw/quanteda.extras/main/vignettes/preprocess_introduction.html target="_blank">vignette</a></td>
