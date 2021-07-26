@@ -72,7 +72,7 @@ time_collocations <- collocates_by_MI(sc_tokens, "time")
 
 
 ```{r echo=FALSE}
-knitr::kable(head(money_collocations))
+knitr::kable(head(time_collocations))
 ```
 
 As is clear from the above table, MI is sensitive to rare/infrequent words. Because of that sensitivity, it commmon to make thresholds for both token frequency (absolute frequency) and MI score (ususally at some value ≥ 3).
