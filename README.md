@@ -20,13 +20,13 @@ devtools::install_github("browndw/quanteda.extras")
 
 <table><tbody><tr><td><b>Pre-processing text</b> 
      </td>
-<td>vignette</td>
+<td><a href=http://htmlpreview.github.io/?https://raw.githubusercontent.com/browndw/quanteda.extras/main/vignettes/preprocess_introduction.html target="_blank">vignette</a></td>
 </tr><tr><td>
      <code>preprocess_text()</code> </td>
 <td>Requires <b>readtext data.frame</b>. A simple function that requires a readtext object. It then processes the text column using basic regex substitutions. </td>
 </tr><td><b>Dispersion</b>
      </td>
-<td>vignette</td>
+<td><a href=http://htmlpreview.github.io/?https://raw.githubusercontent.com/browndw/quanteda.extras/main/vignettes/dispersions_introduction.html target="_blank">vignette</a></td>
 </tr><tr><td>
      <code>frequency_table()</code> </td>
 <td>Requires <b>tokens</b>. The function aggregates useful descriptive measures: absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.</em>) </td>
@@ -43,7 +43,7 @@ devtools::install_github("browndw/quanteda.extras")
 </tr>
 <tr><td><b>Keyness</b>
      </td>
-<td>vignette</td>
+<td><a href=http://htmlpreview.github.io/?https://raw.githubusercontent.com/browndw/quanteda.extras/main/vignettes/keyness_introduction.html target="_blank">vignette</a></td>
 </tr><tr><td>
      <code>keyness_table()</code> </td>
 <td>Requires target and reference <b>dfms</b>. The function returns the log-likelihood of the target vs. reference corpus, effect sizes by log ratio, <em>p</em>-values, absolute frequencies, relative frequencies, and deviation of proportions.</td>
@@ -53,7 +53,7 @@ devtools::install_github("browndw/quanteda.extras")
 </tr><tr><td>
      <code>keyness_pairs()</code> </td>
 <td>Requires 3 or more <b>dfms</b> to compare. The function takes any number of quanteda dfm objects and returns a table of log-likelihood values, effect sizes using Hardie's log ratio and <em>p</em>-values.</td>
-</tr><tr><td><b>Collocations</b>
+</tr><tr><td><b>Collocation</b>
      </td>
 <td><a href=http://htmlpreview.github.io/?https://raw.githubusercontent.com/browndw/quanteda.extras/main/vignettes/collocations_introduction.html target="_blank">vignette</a></td>
 </tr><tr><td>
