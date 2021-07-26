@@ -1,4 +1,4 @@
-#' Calculate collocational assiations by Mutual Information
+#' Calculate collocational associations by Mutual Information
 #' 
 #' A function for calculating point-wise mutual information from quanteda tokens.
 #' The function requires:

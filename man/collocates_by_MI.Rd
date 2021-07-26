@@ -2,7 +2,7 @@
 % Please edit documentation in R/collocation_functions.R
 \name{collocates_by_MI}
 \alias{collocates_by_MI}
-\title{Calculate collocational assiations by Mutual Information}
+\title{Calculate collocational associations by Mutual Information}
 \usage{
 collocates_by_MI(target_tkns, node_word, left = 5, right = 5)
 }

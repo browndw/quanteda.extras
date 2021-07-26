@@ -23,7 +23,7 @@ library(tidyverse)
 ```
 
 
-## Preprocessing
+## Pre-processing
 
 The  **preprocess_text( )** function takes the following logical (TRUE/FALSE) arguments:
 

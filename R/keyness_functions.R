@@ -231,9 +231,9 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   return(key_table)
 }
 
-#' Descriptive measures for all tokens in a corpus
+#' Keyness measures for all tokens in a corpus
 #' 
-#' The frequency_table() function aggregates useful descriptive measures: absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
+#' The keyness_table() function returns the log-likelihood of the target vs. reference corpus, effect sizes by log ratio, p-values, absolute frequencies, relative frequencies, and deviation of proportions.
 #' 
 #' @param target_dfm The target document-feature matrix
 #' @param reference_dfm The reference document-feature matrix

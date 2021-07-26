@@ -2,7 +2,7 @@
 % Please edit documentation in R/keyness_functions.R
 \name{keyness_table}
 \alias{keyness_table}
-\title{Descriptive measures for all tokens in a corpus}
+\title{Keyness measures for all tokens in a corpus}
 \usage{
 keyness_table(target_dfm, reference_dfm, yates = FALSE)
 }
@@ -17,5 +17,5 @@ keyness_table(target_dfm, reference_dfm, yates = FALSE)
 A data.frame containing the log-likelihood, log ratio, absolute frequencies, relative frequencies, and dispersions
 }
 \description{
-The frequency_table() function aggregates useful descriptive measures: absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
+The keyness_table() function returns the log-likelihood of the target vs. reference corpus, effect sizes by log ratio, p-values, absolute frequencies, relative frequencies, and deviation of proportions.
 }
