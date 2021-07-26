@@ -55,7 +55,7 @@ devtools::install_github("browndw/quanteda.extras")
 <td>Requires 3 or more <b>dfms</b> to compare. The function takes any number of quanteda dfm objects and returns a table of log-likelihood values, effect sizes using Hardie's log ratio and <em>p</em>-values.</td>
 </tr><tr><td><b>Collocations</b>
      </td>
-<td>vignette</td>
+<td><a href=http://htmlpreview.github.io/?https://raw.githubusercontent.com/browndw/quanteda.extras/main/vignettes/collocations_introduction.html target="_blank">vignette</a></td>
 </tr><tr><td>
      <code>collocates_by_MI()</code> </td>
 <td>Requires <b>tokens</b>. A function for calculating point-wise mutual information from quanteda tokens.</td>
