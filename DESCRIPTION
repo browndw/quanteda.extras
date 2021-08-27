@@ -18,15 +18,16 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:
-    quanteda, 
-    quanteda.textstats, 
-    tibble,
-    stringr,
-    stringi,
+    data.table,
     dplyr,
     purrr,
-    tidygraph,
-    data.table
+    quanteda,
+    quanteda.textstats,
+    readtext,
+    stringi,
+    stringr,
+    tibble,
+    tidygraph
 Depends: 
     R (>= 2.10)
 Suggests: 
