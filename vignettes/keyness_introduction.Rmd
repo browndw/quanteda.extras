@@ -41,7 +41,7 @@ sc <- sample_corpus %>%
   mutate(text = preprocess_text(text))
 ```
 
-Next, we'll subset the data and create two sub-copora: one of fiction texts and one of academic.
+Next, we'll subset the data and create two sub-corpora: one of fiction texts and one of academic.
 
 ```{r subset, message = FALSE, error=FALSE, warning=FALSE}
 sc_fict <- sc %>%
@@ -84,14 +84,14 @@ The columns are as follows:
 1. **PV**: the *p*-value associated with the log-likelihood
 1. **AF_Tar**: the absolute frequency in the target corpus
 1. **AF_Ref**: the absolute frequency in the reference corpus
-1. **Per_10.x_Tar**: the relatvie frequency in the target corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
-1. **Per_10.x_Ref**: the relatvie frequency in the reference corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
+1. **Per_10.x_Tar**: the relative frequency in the target corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
+1. **Per_10.x_Ref**: the relative frequency in the reference corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
 1. **DP_Tar**: the [**deviation of proportions**](https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora) (a dispersion measure) in the target corpus
 1. **DP_Ref**: the deviation of proportions in the reference corpus
 
 ## Key key words
 
-The concept of ["**key key words**"](https://lexically.net/downloads/version5/HTML/index.html?keykeyness_definition.htm) was introduced by Mike Smith for the WordSmith concordancer. The process comparares each text in the target corpus to the reference corpus. Log-likelihood is calculated for each comparision. Then a mean is calculated for keyness and effect size. In addition, a range is provided for the number of texts in which keyness reaches signficance for a given threshold. (The default is *p* < 0.05.) That range is returned as a percentage.
+The concept of ["**key key words**"](https://lexically.net/downloads/version5/HTML/index.html?keykeyness_definition.htm) was introduced by Mike Smith for the WordSmith concordancer. The process compares each text in the target corpus to the reference corpus. Log-likelihood is calculated for each comparison. Then a mean is calculated for keyness and effect size. In addition, a range is provided for the number of texts in which keyness reaches significance for a given threshold. (The default is *p* < 0.05.) That range is returned as a percentage.
 
 In this way, **key key words** accounts for the dispersion of key words by indicating whether a keyness value is driven by a relatively high frequency in a few target texts or many.
 
