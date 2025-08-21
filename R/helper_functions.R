@@ -1,7 +1,7 @@
 #' Read texts from a vector of paths
-#' 
+#'
 #' Replaces the readtext::readtext function that reads a lists of text files into a data frame.
-#' 
+#'
 #' @param paths A vector of paths to text files that are to be read in.
 #' @return A readtext data.frame
 #' @export
@@ -10,7 +10,7 @@ readtext_lite <- function(paths) {
   doc_ids <- basename(paths)
   # Create a vector collapsing each text file into one element in a character
   # vector
-  texts <- vapply(paths, function(i) paste(readLines(i), collapse = "\n"), 
+  texts <- vapply(paths, function(i) paste(readLines(i), collapse = "\n"),
                   FUN.VALUE = character(1))
   text_df <- data.frame(doc_id = doc_ids, text = texts, stringsAsFactors = FALSE)
   rownames(text_df) <- seq(1:nrow(text_df))
@@ -19,14 +19,14 @@ readtext_lite <- function(paths) {
 }
 
 #' Pre-process texts
-#' 
+#'
 #' A simple function that requires a readtext object.
 #' It then processes the text column using basic regex substitutions.
 #' The default is to add a space before possessives and contractions.
 #' This will force their tokenization in quanteda.
 #' So that "Shakespeare's" will be counted as two tokens rather than a single one.
 #' It is easy to add or delete substations as fits your analytical needs.
-#' 
+#'
 #' @param txt A character vector
 #' @param contractions A logical value to separate contractions into two tokens
 #' @param hypens A logical value to separate hypenated words into two tokens
@@ -65,14 +65,14 @@ excel_style <- function(i) {
   base10toA <- function(n, A) {
     stopifnot(n >= 0L)
     N <- length(A)
-    j <- n %/% N 
+    j <- n %/% N
     if (j == 0L) A[n + 1L] else paste0(Recall(j - 1L, A), A[n %% N + 1L])
-  }   
+  }
   vapply(i-1L, base10toA, character(1L), LETTERS)
 }
 
 #' A function for detecting the size of a corpus and setting the narmalizing factor to the nearest power of 10.
-#' @param corpus_total The total number of words in the corpus
+#' @param x The total number of words in the corpus
 #' @return A named vector
 #' @export
 normalizing_factor <- function(x){

@@ -19,7 +19,7 @@ log_ratio(n_target, n_reference, total_target, total_reference)
 A numeric value representing the log ratio
 }
 \description{
-Take a target column and a reference column, and return an effect size
-This effect size calculation is called Log Ratio
-And was proposed by Andrew Hardie: http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/
+Take a target column and a reference column, and return an effect size. This
+effect size calculation is called Log Ratio and was proposed by Andrew
+Hardie: \url{http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/}
 }

@@ -14,12 +14,15 @@ log_like(n_target, n_reference, total_target, total_reference, correct = FALSE)
 \item{total_target}{The total number of tokens in the target corpus}
 
 \item{total_reference}{The total number of tokens in the reference corpus}
+
+\item{correct}{Whether to perform the Yates correction}
 }
 \value{
 A numeric value representing log-likelihood
 }
 \description{
-Log-likelihood tests the frequencies of tokens in one corpus vs. another.
-It is often used instead of a chi-square test, as it has been shown to be
-more resistant to corpora of varying sizes. For more detail see: http://ucrel.lancs.ac.uk/llwizard.html
+Log-likelihood tests the frequencies of tokens in one corpus vs. another. It
+is often used instead of a chi-square test, as it has been shown to be more
+resistant to corpora of varying sizes. For more detail see:
+\url{http://ucrel.lancs.ac.uk/llwizard.html}
 }

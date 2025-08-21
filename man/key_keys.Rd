@@ -4,12 +4,7 @@
 \alias{key_keys}
 \title{Key of keys calculation}
 \usage{
-key_keys(
-  target_dfm,
-  reference_dfm,
-  threshold = c(0.05, 0.01, 0.001, 1e-04),
-  yates = FALSE
-)
+key_keys(target_dfm, reference_dfm, threshold = 0.05, yates = FALSE)
 }
 \arguments{
 \item{target_dfm}{The target document-feature matrix}

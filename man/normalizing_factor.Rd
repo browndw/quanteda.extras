@@ -7,7 +7,7 @@
 normalizing_factor(x)
 }
 \arguments{
-\item{corpus_total}{The total number of words in the corpus}
+\item{x}{The total number of words in the corpus}
 }
 \value{
 A named vector

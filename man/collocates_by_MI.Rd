@@ -26,6 +26,6 @@ The function requires:
 \item a node word to search for
 \item a window counting to the left
 \item a window counting to the right
-So collocates_by_MI(my_tokens, "test", 5, 5) would look for collocates words to the left and 5 words to the right of the word "test".
+So \code{collocates_by_MI(my_tokens, "test", 5, 5)} would look for collocates words to the left and 5 words to the right of the word "test".
 }
 }

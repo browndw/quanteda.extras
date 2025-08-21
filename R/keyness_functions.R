@@ -1,13 +1,15 @@
 #' Log-likelihood calculation
-#' 
-#' Log-likelihood tests the frequencies of tokens in one corpus vs. another.
-#' It is often used instead of a chi-square test, as it has been shown to be
-#' more resistant to corpora of varying sizes. For more detail see: http://ucrel.lancs.ac.uk/llwizard.html
-#' 
+#'
+#' Log-likelihood tests the frequencies of tokens in one corpus vs. another. It
+#' is often used instead of a chi-square test, as it has been shown to be more
+#' resistant to corpora of varying sizes. For more detail see:
+#' <http://ucrel.lancs.ac.uk/llwizard.html>
+#'
 #' @param n_target The raw (non-normalized) token count in the target corpus
 #' @param n_reference The raw (non-normalized) token count in the reference corpus
 #' @param total_target The total number of tokens in the target corpus
 #' @param total_reference The total number of tokens in the reference corpus
+#' @param correct Whether to perform the Yates correction
 #' @return A numeric value representing log-likelihood
 #' @export
 log_like <- function(n_target, n_reference, total_target, total_reference, correct=FALSE) {
@@ -16,7 +18,7 @@ log_like <- function(n_target, n_reference, total_target, total_reference, corre
   if(correct==T){ #Perform the "Yates" correction
     n_a <- ifelse(n_target - expected_a > 0.25, n_target - 0.5, n_target)
     n_b <- ifelse(n_target - expected_a > 0.25,  n_reference + 0.5, n_reference)
-    
+
     n_a <- ifelse(expected_a - n_target > 0.25, n_target + 0.5, n_a)
     n_b <- ifelse(expected_a - n_target > 0.25, n_reference - 0.5, n_b)
   }
@@ -32,11 +34,11 @@ log_like <- function(n_target, n_reference, total_target, total_reference, corre
 }
 
 #' Log-ratio calculation
-#' 
-#' Take a target column and a reference column, and return an effect size
-#' This effect size calculation is called Log Ratio
-#' And was proposed by Andrew Hardie: http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/
-#' 
+#'
+#' Take a target column and a reference column, and return an effect size. This
+#' effect size calculation is called Log Ratio and was proposed by Andrew
+#' Hardie: <http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/>
+#'
 #' @param n_target The raw (non-normalized) token count in the target corpus
 #' @param n_reference The raw (non-normalized) token count in the reference corpus
 #' @param total_target The total number of tokens in the target corpus
@@ -53,7 +55,7 @@ log_ratio <- function (n_target, n_reference, total_target, total_reference) {
 }
 
 #' Key of keys calculation
-#' 
+#'
 #' The following function is based on an idea proposed by Mike Scott
 #' and used in his concordancer WordSmith:
 #' https://lexically.net/downloads/version4/html/index.html?database_info.htm
@@ -66,37 +68,33 @@ log_ratio <- function (n_target, n_reference, total_target, total_reference) {
 #' Are a few texts driving keyness values? Or many?
 #' The function returns a data.frame that includes:
 #' - the percent of texts in the target corpus for which keyness reaches the specified threshold
-#' - the mean keyness value in the target 
+#' - the mean keyness value in the target
 #' - the standard deviation of keyness
 #' - the mean effect size by log ratio
 #' Note that it is easy enough to alter the function to return other values.
-#' 
+#'
 #' @param target_dfm The target document-feature matrix
 #' @param reference_dfm The reference document-feature matrix
 #' @param threshold The p-value threshold for calculating percentage of documents reaching significance
 #' @param yates A logical value indicating whether the "Yates" correction should be performed
 #' @return A data.frame containing the percentage of documents reaching significance, mean keyness, and mean effect size
+#' @importFrom stats qchisq
 #' @export
-key_keys <- function(target_dfm, reference_dfm, threshold=c(0.05, 0.01, 0.001, 0.0001), yates=FALSE){
-  if (class(target_dfm)[1] != "dfm") stop ("Your target must be a quanteda dfm object.")
-  if (class(reference_dfm)[1] != "dfm") stop ("Your reference must be a quanteda dfm object.")
-  
+key_keys <- function(target_dfm, reference_dfm, threshold = 0.05, yates = FALSE) {
+  if (!inherits(target_dfm, "dfm")) stop ("Your target must be a quanteda dfm object.")
+  if (!inherits(reference_dfm, "dfm")) stop ("Your reference must be a quanteda dfm object.")
+
   # Here we just specify the thresholds for p-values with df = 1
-  if(missing(threshold)) {
-    th <- 3.84} else {
-      if(threshold == 0.05) th <- 3.84;
-      if(threshold == 0.01) th <- 6.63;
-      if(threshold == 0.001) th <- 10.83;
-      if(threshold == 0.0001) th <- 15.13}
-  
+  th <- qchisq(1 - threshold, df = 1)
+
   # Here, we're just restructuring our data.
   # First, we're making sure it's trimmed.
   target_dfm <- suppressWarnings(quanteda::dfm_trim(target_dfm, min_termfreq = 1))
   reference_dfm <-suppressWarnings(quanteda::dfm_trim(reference_dfm, min_termfreq = 1))
-  
+
   # Sum the frequencies for the reference corpus.
   reference_df <- suppressWarnings(quanteda.textstats::textstat_frequency(reference_dfm))
-  
+
   # Prep the target corpus by first converting it to a data.frame
   target_df <- suppressWarnings(quanteda::convert(target_dfm, to = "data.frame"))
   target_docs <- target_df$doc_id
@@ -121,22 +119,22 @@ key_keys <- function(target_dfm, reference_dfm, threshold=c(0.05, 0.01, 0.001, 0
   target_counts <- comb_df[, -c(1:2)]
   # Convert from character to numeric values.
   target_counts <- as.data.frame(sapply(target_counts, as.numeric))
-  
+
   target_totals <- as.vector(colSums(target_counts))
   reference_total <- sum(reference_counts)
-  
+
   # This generates an index of columns that we can iterate through.
   idx <- seq(ncol(target_counts))
-  
+
   # This iterates through the columns and generates a data.frame of keyness values.
   # If you want to return this data.frame, it's easy enough to edit the function.
-  
-  keyness <- as.data.frame(sapply(idx, function(i) quanteda.extras::log_like(target_counts[,i], reference_counts, target_totals[i], reference_total, correct = yates)))
-  
+
+  keyness <- as.data.frame(sapply(idx, function(i) log_like(target_counts[,i], reference_counts, target_totals[i], reference_total, correct = yates)))
+
   # We're also going to generate a data.frame of effect sizes.
-  effect <- as.data.frame(sapply(idx, function(i) quanteda.extras::log_ratio(target_counts[,i], reference_counts, target_totals[i], reference_total)))
+  effect <- as.data.frame(sapply(idx, function(i) log_ratio(target_counts[,i], reference_counts, target_totals[i], reference_total)))
   rownames(effect) <- feature
-  
+
   # From these two data.frames we can generate some values.
   #
   # The mean effect sizes:
@@ -157,25 +155,26 @@ key_keys <- function(target_dfm, reference_dfm, threshold=c(0.05, 0.01, 0.001, 0
 }
 
 #' Pairwise keyness values from any number of dfms
-#' 
+#'
 #' This function takes any number of quanteda dfm objects and returns a table of log-likelihood values, effect sizes
 #' using Hardie's log ratio and p-values
-#' 
+#'
 #' @param dfm_a A document-feature matrix
 #' @param dfm_b A document-feature matrix
 #' @param ... Additional document-feature matrices
 #' @param yates A logical value indicating whether the "Yates" correction should be performed
 #' @return A data.frame containing pairwise keyness comparisons of all dfms
 #' @export
+#' @importFrom stats pchisq
+#' @importFrom utils combn
 keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   all_corpora <- list(dfm_a, dfm_b, ...)
-  test_class <- lapply(all_corpora, class)
-  if (unique(test_class)[1] != "dfm") stop ("Your corpora must be a quanteda dfm objects.")
-  if (length(unique(test_class)) != 1) stop ("Your corpora must be a quanteda dfm objects.")
-  
+  test_class = lapply(all_corpora, function(c) inherits(c, "dfm"))
+  if (!all(test_class)) stop ("Your corpora must be quanteda dfm objects.")
+
   # Generate frequency lists using textstat_frequency()
   freq_list <- lapply(all_corpora, suppressWarnings(quanteda.textstats::textstat_frequency))
-  
+
   # Subset out the need columns
   freq_list <- lapply(freq_list, function(x) subset(x, select=c("feature", "frequency")))
   # Create an index
@@ -199,12 +198,12 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
     j <- name_pairs[1,i]
     k <- name_pairs[2,i]
     l <- paste(j, k, sep = "_v_")})
-  
+
   # Calculate log-likeihood
   ll <- as.data.frame(sapply(pair_idx, function(i) {
     j <- corpora_pairs[1,i]
     k <- corpora_pairs[2,i]
-    quanteda.extras::log_like(freq_df[,j], freq_df[,k], total_counts[j], total_counts[k], correct = yates)}))
+    log_like(freq_df[,j], freq_df[,k], total_counts[j], total_counts[k], correct = yates)}))
   # Apply column names
   colnames(ll) <- lapply(comp_names, function(x) paste(x, "LL", sep = "_"))
   # Calculate the effect sizes
@@ -232,36 +231,36 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
 }
 
 #' Keyness measures for all tokens in a corpus
-#' 
+#'
 #' The keyness_table() function returns the log-likelihood of the target vs. reference corpus, effect sizes by log ratio, p-values, absolute frequencies, relative frequencies, and deviation of proportions.
-#' 
+#'
 #' @param target_dfm The target document-feature matrix
 #' @param reference_dfm The reference document-feature matrix
 #' @param yates A logical value indicating whether the "Yates" correction should be performed
 #' @return A data.frame containing the log-likelihood, log ratio, absolute frequencies, relative frequencies, and dispersions
 #' @export
 keyness_table <- function(target_dfm, reference_dfm, yates=FALSE){
-  
+
   if (class(target_dfm)[1] != "dfm") stop ("Your target must be a quanteda dfm object.")
   if (class(reference_dfm)[1] != "dfm") stop ("Your reference must be a quanteda dfm object.")
-  
+
   total_counts <- c(sum(quanteda::ntoken(target_dfm)), sum(quanteda::ntoken(reference_dfm)))
-  nf <- quanteda.extras::normalizing_factor(max(total_counts))
-  
+  nf <- normalizing_factor(max(total_counts))
+
   freq_table <- function(dfm){
-    
+
     m <- as.matrix(dfm)
     idx <- seq(1:ncol(m))
     total <- sum(rowSums(m))
     #calculte the relative sizes of the parts of the corpus (in percent)
     parts <- rowSums(m)/total
-    
+
     dp <- function(v, s=rep(1/length(v))) {
-      
+
       n <- length(v) # n
       f <- sum(v) # f
       s <- s/sum(s) # s
-      
+
       values <- list()
       values[["AF"]] <- f
       values[[names(nf)]] <- (f/total)*as.numeric(nf)
@@ -269,27 +268,27 @@ keyness_table <- function(target_dfm, reference_dfm, yates=FALSE){
       values <- as.data.frame(t(as.matrix(unlist(values))))
       return(values)
     }
-    
+
     dsp <- lapply(idx, function(i){dp(m[,i], parts)})
     dsp <- data.frame(data.table::rbindlist(dsp))
     dsp$Token <- colnames(m)
     dsp <- dsp[order(-dsp$AF),]
     return(dsp)
   }
-  
+
   target_df <- freq_table(target_dfm)
   reference_df <- freq_table(reference_dfm)
-  
+
   freq_df <- merge(target_df, reference_df, by = "Token", all = T)
   freq_df <- freq_df[,c(1,2,5,3,6,4,7)]
   freq_df[,2:5][is.na(freq_df[,2:5])] <- 0
   colnames(freq_df) <- gsub("\\.x", "_Tar", colnames(freq_df))
   colnames(freq_df) <- gsub("\\.y", "_Ref", colnames(freq_df))
-  
-  ll <- quanteda.extras::log_like(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2], correct = yates)
-  lr <- quanteda.extras::log_ratio(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2])
+
+  ll <- log_like(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2], correct = yates)
+  lr <- log_ratio(freq_df[,2], freq_df[,3], total_counts[1], total_counts[2])
   pv <- pchisq(abs(ll),1,lower.tail=FALSE)
-  
+
   freq_df$LL <- ll
   freq_df$LR <- lr
   freq_df$PV <- pv
@@ -298,4 +297,3 @@ keyness_table <- function(target_dfm, reference_dfm, yates=FALSE){
   rownames(freq_df) <- seq(1:nrow(freq_df))
   return(freq_df)
 }
-
