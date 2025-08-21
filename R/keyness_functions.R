@@ -194,7 +194,7 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   # Get the total counts
   total_counts <- colSums(freq_df)
   comp_names <- sapply(pair_idx, function(i) {
-    name_pairs <- combn(quanteda.extras::excel_style(idx), 2)
+    name_pairs <- combn(excel_style(idx), 2)
     j <- name_pairs[1,i]
     k <- name_pairs[2,i]
     l <- paste(j, k, sep = "_v_")})
@@ -210,7 +210,7 @@ keyness_pairs <- function(dfm_a, dfm_b, ..., yates=FALSE){
   lr <- as.data.frame(sapply(pair_idx, function(i) {
     j <- corpora_pairs[1,i]
     k <- corpora_pairs[2,i]
-    quanteda.extras::log_ratio(freq_df[,j], freq_df[,k], total_counts[j], total_counts[k])}))
+    log_ratio(freq_df[,j], freq_df[,k], total_counts[j], total_counts[k])}))
   # Apply column names
   colnames(lr) <- lapply(comp_names, function(x) paste(x, "LR", sep = "_"))
   # Calculate p-values
