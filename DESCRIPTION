@@ -7,8 +7,6 @@ Authors@R:
            role = c("aut", "cre"),
            email = "dwb2@andrew.cmu.edu",
            comment = c(ORCID = "0000-0001-7745-6354"))
-Author: David Brown [aut, cre]
-Maintainer: David Brown <dwb2@andrew.cmu.edu>
 Description: Provides additional statistical and plotting tools that expand 
     the functionality of quanteda. Includes functions for calculating keyness, 
     effect sizes, dispersion measures, and collocations. These tools are 

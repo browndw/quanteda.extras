@@ -1,6 +1,7 @@
 ## quanteda.extras
 
 [![R-CMD-check](https://github.com/browndw/quanteda.extras/workflows/R-CMD-check/badge.svg)](https://github.com/browndw/quanteda.extras/actions)
+[![Tests](https://github.com/browndw/quanteda.extras/workflows/Tests/badge.svg)](https://github.com/browndw/quanteda.extras/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/quanteda.extras)](https://CRAN.R-project.org/package=quanteda.extras)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/quanteda.extras)](https://cran.r-project.org/package=quanteda.extras)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)

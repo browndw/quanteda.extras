@@ -59,7 +59,7 @@ sc_acad <- sc %>%
 
 There are a couple of important issues to be aware of:
 
-1. The **quanteda** package has it's own native keyness function as part of  [**quanteda.textstats**](https://cran.r-project.org/web/packages/quanteda.textstats/index.html): **textstat_keyness( )**.
+1. The **quanteda** package has it's own native keyness function as part of  [**quanteda.textstats**](https://CRAN.R-project.org/package=quanteda.textstats): **textstat_keyness( )**.
 1. Using the **textstat_keyness( )** function requires a slightly different workflow, but is perfectly fine if you only want to generate a basic keyness statistic.
 1. The keyness functions here expand that basic functionality by adding effect sizes and other measures, as well as an implementation of **"key key words,"** which accounts for how distributed key words are in the target corpus.
 
@@ -86,7 +86,7 @@ The columns are as follows:
 1. **AF_Ref**: the absolute frequency in the reference corpus
 1. **Per_10.x_Tar**: the relative frequency in the target corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
 1. **Per_10.x_Ref**: the relative frequency in the reference corpus (automatically calibrated to a normaizing factor, where here is per 100,000 tokens)
-1. **DP_Tar**: the [**deviation of proportions**](https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora) (a dispersion measure) in the target corpus
+1. **DP_Tar**: the **deviation of proportions** (a dispersion measure) in the target corpus
 1. **DP_Ref**: the deviation of proportions in the reference corpus
 
 ## Key key words

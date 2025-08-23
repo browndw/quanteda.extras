@@ -31,6 +31,7 @@ Inquiry and Word Count), but is orders of manitude larger and organizes its
 categories according to a rhetorical orientation to language.
 }
 \examples{
+\donttest{
 library(quanteda)
 
 corpus <- sample_corpus$text
@@ -40,5 +41,6 @@ toks <- tokens(corpus, remove_punct = FALSE, remove_numbers = FALSE,
                remove_symbols = FALSE, what = "word")
 
 tokens_lookup(toks, ds_dict, levels = 1, valuetype = "fixed")
+}
 }
 \keyword{datasets}

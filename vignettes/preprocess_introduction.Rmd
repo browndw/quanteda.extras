@@ -125,7 +125,7 @@ The package comes with a small corpus -- the **sample_corpus**. The corpus conta
 * Television & Movie
 * Web
 
-In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type, and each text is only about 2,500 words. Thus, it is similar to the [Brown family of corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html) in its size (roughly 1 million words).
+In this way, it resembles the [Corpus of Contemporary American English](https://www.english-corpora.org/coca/). However, it contains only 50 texts from each type, and each text is only about 2,500 words. Thus, it is similar to the Brown family of corpora in its size (roughly 1 million words).
 
 Note that this data is included *only* for demonstration purposes. It was *not* compiled to be used for research.
 

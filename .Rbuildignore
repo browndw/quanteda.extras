@@ -1,0 +1,10 @@
+^doc$
+^Meta$
+^\.git$
+^\.github$
+^\.gitignore$
+^\.vscode$
+^\.DS_Store$
+^.*\.Rcheck$
+^.*\.tar\.gz$
+README\.md$

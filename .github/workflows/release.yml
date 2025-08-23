@@ -50,9 +50,15 @@ jobs:
         rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
       shell: Rscript {0}
         
+    - name: Build vignettes
+      run: |
+        devtools::build_vignettes()
+      shell: Rscript {0}
+        
     - name: Build source package
       run: |
-        pkgbuild::build(dest_path = ".", binary = FALSE)
+        # Use R CMD build instead of pkgbuild::build to ensure proper vignette handling
+        system("R CMD build .")
       shell: Rscript {0}
         
     - name: Get package info

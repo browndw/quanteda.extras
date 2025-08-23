@@ -53,6 +53,7 @@
 #'
 #' @format quanteda dictionary object (see `quanteda::dictionary()`)
 #' @examples
+#' \donttest{
 #' library(quanteda)
 #'
 #' corpus <- sample_corpus$text
@@ -62,6 +63,7 @@
 #'                remove_symbols = FALSE, what = "word")
 #'
 #' tokens_lookup(toks, ds_dict, levels = 1, valuetype = "fixed")
+#' }
 "ds_dict"
 
 #' List of common multi-word expressions

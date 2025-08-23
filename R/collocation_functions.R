@@ -309,7 +309,7 @@ col_network <- function(col_1, ...) {
   # calculate the number of node words each collocation intersects with
   intersects <- dplyr::tally(id_grp)
   # for collocates with multiple intersections, summarize by mean
-  freq_norm <- dplyr::summarise(id_grp, freq = mean(col_freq))
+  freq_norm <- dplyr::summarise(id_grp, freq = mean(.data$col_freq))
   # find the max frequency of all collocates
   freq_max <- max(freq_norm$freq)
   # make a data.frame of node words,
@@ -327,7 +327,7 @@ col_network <- function(col_1, ...) {
   nodes$token <- as.character(nodes$token)
   nodes$n <- as.factor(nodes$n)
   nodes <- dplyr::rename(
-    nodes, label = token, n_intersects = n, node_weight = freq
+    nodes, label = .data$token, n_intersects = .data$n, node_weight = .data$freq
   )
 
   # assemble edge values - use the 4th column which contains the MI statistic

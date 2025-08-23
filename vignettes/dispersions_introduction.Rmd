@@ -55,7 +55,7 @@ The relatvie frequency (**Per_10.x**) the relatvie frequency is automatically ca
 
 Average reduced frequency (**ARF**) combines dispersion and frequency into a single measure by de-emphasizing occurrences of a token that appear clustered in close proximity.
 
-[Deviation of proportions](https://www.researchgate.net/publication/233685362_Dispersions_and_adjusted_frequencies_in_corpora) (**DP**) is a dispersion statistic proposed by Greis, which measures dispersion on a scale of 0 to 1 such that tokens with DP close to zero are **more** dispersed while those closer to 1 are **less** dispersed.
+**Deviation of proportions** (**DP**) is a dispersion statistic proposed by Gries (2010), which measures dispersion on a scale of 0 to 1 such that tokens with DP close to zero are **more** dispersed while those closer to 1 are **less** dispersed.
 
 ```{r freq_table, message = FALSE, error=FALSE, warning=FALSE}
 ft <- frequency_table(sc_tokens)
@@ -94,7 +94,7 @@ knitr::kable(head(dt))
 
 ## Dispersion statistics for a singe token
 
-The **dispersions_token( )** function calculates the dispersion measures for a single token. It returns a named list with all of the dispersion measures discussed by [S.T. Gries](http://www.stgries.info/research/dispersion/links.html) and the function is baesed on a script he originally authored.
+The **dispersions_token( )** function calculates the dispersion measures for a single token. It returns a named list with all of the dispersion measures discussed by [S.T. Gries](https://www.stgries.info/research/dispersion/links.html) and the function is baesed on a script he originally authored.
 
 ```{r disp_token}
 a <- dispersions_token(sc_dfm, "data")
