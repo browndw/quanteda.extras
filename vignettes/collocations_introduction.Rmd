@@ -80,8 +80,8 @@ As is clear from the above table, MI is sensitive to rare/infrequent words. Beca
 For our purposes, we'll filter for AF ≥ 5 and MI ≥ 5.
 
 ```{r filter}
-tc <- time_collocations %>% filter(col_freq >= 5 & MI_1 >= 5)
-mc <- money_collocations %>% filter(col_freq >= 5 & MI_1 >= 5)
+tc <- time_collocations %>% filter(col_freq >= 5 & PMI >= 5)
+mc <- money_collocations %>% filter(col_freq >= 5 & PMI >= 5)
 ```
 
 Check the result:
