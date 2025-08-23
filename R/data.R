@@ -3,8 +3,7 @@
 #' A small corpus compiled following the sampling procedures of the [Corpus of
 #' Contemporary American English](https://www.english-corpora.org/coca/).
 #' However, it contains only 50 texts from each type, and each text is only
-#' about 2,500 words. Thus, it is similar to the [Brown family of
-#' corpora](https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html)
+#' about 2,500 words. Thus, it is similar to the Brown family of corpora
 #' in its size (roughly 1 million words).
 #'
 #' The corpus contains data from 8 text-types:
