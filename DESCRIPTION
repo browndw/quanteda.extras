@@ -1,16 +1,18 @@
 Package: quanteda.extras
-Title: Additional Corpus Functions for quanteda
-Version: 1.0
+Title: Additional Corpus Functions for Quanteda
+Version: 1.1.0
 Authors@R: 
     person(given = "David",
            family = "Brown",
            role = c("aut", "cre"),
            email = "dwb2@andrew.cmu.edu",
            comment = c(ORCID = "0000-0001-7745-6354"))
-Description:
-	The package includes common corpus functions that expand
-	the utility of quanteda. These include functions for 
-	calculating effect sizes, dispersions, and collocations.
+Author: David Brown [aut, cre]
+Maintainer: David Brown <dwb2@andrew.cmu.edu>
+Description: Provides additional statistical and plotting tools that expand 
+    the functionality of quanteda. Includes functions for calculating keyness, 
+    effect sizes, dispersion measures, and collocations. These tools are 
+    useful for corpus linguistics and text analysis research.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -22,6 +24,7 @@ Imports:
     purrr,
     quanteda,
     quanteda.textstats,
+    rlang,
     stringi,
     stringr,
     tibble,
@@ -33,5 +36,6 @@ Suggests:
     knitr,
     ggraph,
     readtext,
-    tidyverse
+    tidyverse,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
