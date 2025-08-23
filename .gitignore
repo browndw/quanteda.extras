@@ -1,5 +1,6 @@
 # Project Specific
 .DS_Store
+.vscode/
 
 # History files
 .Rhistory
