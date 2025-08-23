@@ -10,10 +10,22 @@ dispersions_all(target_dfm)
 \item{target_dfm}{The target document-feature matrix.}
 }
 \value{
-A data.frame containing dispersion measures for the tokens in the document-feature matrix.
+A data.frame containing dispersion measures for the tokens in the
+document-feature matrix.
 }
 \description{
-The dispersions_all() function calculates a subset of of the most common dispersion measures
-for all of the tokens in a document-feature matrix and returns a data.frame.
-For example: dispersions_all(my_dfm)
+The dispersions_all() function calculates a subset of of the most common
+dispersion measures for all of the tokens in a document-feature matrix and
+returns a data.frame. For example: dispersions_all(my_dfm)
+}
+\examples{
+\donttest{
+library(quanteda)
+texts <- c("The cat sat on the mat",
+           "The dog ran in the park", 
+           "The cat and dog are friends")
+dfm_obj <- dfm(tokens(texts))
+dispersions <- dispersions_all(dfm_obj)
+head(dispersions)
+}
 }

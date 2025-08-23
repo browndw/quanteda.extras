@@ -7,9 +7,9 @@
 log_ratio(n_target, n_reference, total_target, total_reference)
 }
 \arguments{
-\item{n_target}{The raw (non-normalized) token count in the target corpus}
+\item{n_target}{The non-normalized token count in the target corpus}
 
-\item{n_reference}{The raw (non-normalized) token count in the reference corpus}
+\item{n_reference}{The non-normalized token count in the reference corpus}
 
 \item{total_target}{The total number of tokens in the target corpus}
 

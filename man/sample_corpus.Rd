@@ -16,7 +16,7 @@ sample_corpus
 \description{
 A small corpus compiled following the sampling procedures of the \href{https://www.english-corpora.org/coca/}{Corpus of Contemporary American English}.
 However, it contains only 50 texts from each type, and each text is only
-about 2,500 words. Thus, it is similar to the \href{https://www1.essex.ac.uk/linguistics/external/clmt/w3c/corpus_ling/content/corpora/list/private/brown/brown.html}{Brown family of corpora}
+about 2,500 words. Thus, it is similar to the Brown family of corpora
 in its size (roughly 1 million words).
 }
 \details{

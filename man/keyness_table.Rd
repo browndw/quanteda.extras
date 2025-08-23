@@ -11,11 +11,31 @@ keyness_table(target_dfm, reference_dfm, yates = FALSE)
 
 \item{reference_dfm}{The reference document-feature matrix}
 
-\item{yates}{A logical value indicating whether the "Yates" correction should be performed}
+\item{yates}{A logical value indicating whether to perform the "Yates"
+correction}
 }
 \value{
-A data.frame containing the log-likelihood, log ratio, absolute frequencies, relative frequencies, and dispersions
+A data.frame containing the log-likelihood, log ratio, absolute
+frequencies, relative frequencies, and dispersions
 }
 \description{
-The keyness_table() function returns the log-likelihood of the target vs. reference corpus, effect sizes by log ratio, p-values, absolute frequencies, relative frequencies, and deviation of proportions.
+The keyness_table() function returns the log-likelihood
+of the target vs. reference corpus, effect sizes by log ratio,
+p-values, absolute frequencies, relative frequencies,
+and deviation of proportions.
+}
+\examples{
+\donttest{
+library(quanteda)
+target_texts <- c("The government policy was controversial",
+                  "Political debates are heated",
+                  "Policy makers need to consider evidence")
+reference_texts <- c("The cat sat on the mat",
+                     "Dogs love to play in parks",
+                     "Animals need care and attention")
+target_dfm <- dfm(tokens(target_texts))
+reference_dfm <- dfm(tokens(reference_texts))
+result <- keyness_table(target_dfm, reference_dfm)
+head(result)
+}
 }

@@ -11,12 +11,14 @@ key_keys(target_dfm, reference_dfm, threshold = 0.05, yates = FALSE)
 
 \item{reference_dfm}{The reference document-feature matrix}
 
-\item{threshold}{The p-value threshold for calculating percentage of documents reaching significance}
+\item{threshold}{The p-value threshold for reaching significance}
 
-\item{yates}{A logical value indicating whether the "Yates" correction should be performed}
+\item{yates}{A logical value indicating whether to perform the "Yates"
+correction}
 }
 \value{
-A data.frame containing the percentage of documents reaching significance, mean keyness, and mean effect size
+A data.frame containing the percentage of documents reaching
+significance, mean keyness, and mean effect size
 }
 \description{
 The following function is based on an idea proposed by Mike Scott
@@ -31,10 +33,28 @@ Essentially, this is a way of accounting for distribution:
 Are a few texts driving keyness values? Or many?
 The function returns a data.frame that includes:
 \itemize{
-\item the percent of texts in the target corpus for which keyness reaches the specified threshold
+\item the percent of texts in the target corpus for which keyness reaches
+the specified threshold
 \item the mean keyness value in the target
 \item the standard deviation of keyness
 \item the mean effect size by log ratio
 Note that it is easy enough to alter the function to return other values.
+}
+}
+\examples{
+\donttest{
+library(quanteda)
+# Create target corpus (political texts)
+target_texts <- c("The government policy was controversial",
+                  "Political debates are heated", 
+                  "Policy makers need evidence")
+# Create reference corpus (general texts)  
+reference_texts <- c("The cat sat on the mat",
+                     "Dogs love to play in parks",
+                     "Animals need care and attention")
+target_dfm <- dfm(tokens(target_texts))
+reference_dfm <- dfm(tokens(reference_texts))
+key_keys_result <- key_keys(target_dfm, reference_dfm)
+head(key_keys_result)
 }
 }

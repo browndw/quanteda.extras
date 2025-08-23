@@ -18,6 +18,24 @@ A tidygraph table for network plotting.
 This function operationalizes the idea of collcational networks described by
 Brezina, McEnery & Wattam (2015):
 https://www.jbe-platform.com/content/journals/10.1075/ijcl.20.2.01bre
-The function takes data.frames produced by the collocates_by_MI() function above
+The function takes data.frames produced
+by the collocates_by_MI() function above
 and generates a tidygraph data object for plotting in ggraph.
+}
+\examples{
+\donttest{
+library(quanteda)
+texts <- c("The big cat sat on the mat",
+           "The big cat ran very fast",
+           "The big cat likes to hunt mice",
+           "Time flies like an arrow",
+           "Money may be important, but so is time")
+toks <- tokens(texts)
+# Create collocation objects for different node words
+cat_collocations <- collocates_by_MI(toks, "cat", left = 1, right = 1)
+time_collocations <- collocates_by_MI(toks, "time", left = 1, right = 1)
+# Create network object
+network <- col_network(cat_collocations, time_collocations)
+print(network)
+}
 }

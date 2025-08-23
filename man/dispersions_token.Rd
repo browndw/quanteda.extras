@@ -15,7 +15,10 @@ dispersions_token(target_dfm, token)
 A named list of dispersion measures.
 }
 \description{
-The dispersions_token() function calculates the dispersion measures for a single token.
-For example: dispersions_token (my_dfm, "cat")
-It returns a named list with all of the dispersion measures discussed by S.T. Gries: (http://www.stgries.info/research/dispersion/links.html)
+The dispersions_token() function calculates
+the dispersion measures for a single token.
+For example: dispersions_token(my_dfm, "cat")
+It returns a named list with all of the
+dispersion measures discussed by S.T. Gries:
+(http://www.stgries.info/research/dispersion/links.html)
 }

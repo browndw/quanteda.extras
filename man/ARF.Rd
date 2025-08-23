@@ -2,7 +2,10 @@
 % Please edit documentation in R/dispersion_functions.R
 \name{ARF}
 \alias{ARF}
-\title{Average reduced frequencies for all tokens in a corpus}
+\title{Average reduced frequencies for all tokens in a corpus
+ARF calculates average reduced frequency, which combines dispersion and
+frequency into a single measure. It does this by de-emphasizing occurrences
+that appear clustered in close proximity.}
 \usage{
 ARF(target_tkns)
 }
@@ -13,6 +16,19 @@ ARF(target_tkns)
 A data.frame containing average reduced frequency for each token.
 }
 \description{
-ARF calculates average reduced frequency, which combines dispersion and frequency into a single measure.
-It does this by de-emphasizing occurrences that appear clustered in close proximity.
+Average reduced frequencies for all tokens in a corpus
+ARF calculates average reduced frequency, which combines dispersion and
+frequency into a single measure. It does this by de-emphasizing occurrences
+that appear clustered in close proximity.
+}
+\examples{
+\donttest{
+library(quanteda)
+texts <- c("The cat sat on the mat",
+           "The cat ran fast", 
+           "Another cat story about cats")
+toks <- tokens(texts)
+arf_result <- ARF(toks)
+head(arf_result)
+}
 }

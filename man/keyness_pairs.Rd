@@ -13,12 +13,13 @@ keyness_pairs(dfm_a, dfm_b, ..., yates = FALSE)
 
 \item{...}{Additional document-feature matrices}
 
-\item{yates}{A logical value indicating whether the "Yates" correction should be performed}
+\item{yates}{Whether to perform the "Yates" correction}
 }
 \value{
 A data.frame containing pairwise keyness comparisons of all dfms
 }
 \description{
-This function takes any number of quanteda dfm objects and returns a table of log-likelihood values, effect sizes
+This function takes any number of quanteda dfm objects and
+returns a table of log-likelihood values, effect sizes
 using Hardie's log ratio and p-values
 }

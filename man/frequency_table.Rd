@@ -2,7 +2,10 @@
 % Please edit documentation in R/dispersion_functions.R
 \name{frequency_table}
 \alias{frequency_table}
-\title{Descriptive measures for all tokens in a corpus}
+\title{Descriptive measures for all tokens in a corpus
+The frequency_table() function aggregates useful descriptive measures:
+absolute frequency, relative frequency, average reduced frequency, and
+deviation of proportions.}
 \usage{
 frequency_table(target_tkns)
 }
@@ -10,8 +13,23 @@ frequency_table(target_tkns)
 \item{target_tkns}{The target quanteda tokens object.}
 }
 \value{
-A data.frame containing absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
+A data.frame containing absolute frequency, relative frequency,
+average reduced frequency, and deviation of proportions.
 }
 \description{
-The frequency_table() function aggregates useful descriptive measures: absolute frequency, relative frequency, average reduced frequency, and deviation of proportions.
+Descriptive measures for all tokens in a corpus
+The frequency_table() function aggregates useful descriptive measures:
+absolute frequency, relative frequency, average reduced frequency, and
+deviation of proportions.
+}
+\examples{
+\donttest{
+library(quanteda)
+texts <- c("The cat sat on the mat",
+           "The dog ran in the park",
+           "The cat and dog are friends")
+toks <- tokens(texts)
+freq_table <- frequency_table(toks)
+head(freq_table)
+}
 }

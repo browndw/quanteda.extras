@@ -4,28 +4,52 @@
 \alias{collocates_by_MI}
 \title{Calculate collocational associations by Mutual Information}
 \usage{
-collocates_by_MI(target_tkns, node_word, left = 5, right = 5)
+collocates_by_MI(
+  target_tkns,
+  node_word,
+  left = 5,
+  right = 5,
+  statistic = "pmi"
+)
 }
 \arguments{
 \item{target_tkns}{The target quanteda tokens object.}
 
 \item{node_word}{The token of interest.}
 
-\item{left}{A numeric value indicating how many words a span should extend to the left of the node word.}
+\item{left}{How many words a span should extend to the left of the node word.}
 
-\item{right}{A numeric value indicating how many words a span should extend to the right of the node word}
+\item{right}{How many words a span should extend to the right of the
+node word.}
+
+\item{statistic}{The type of mutual information to calculate. One of "pmi"
+(default), "pmi2", "pmi3", or "npmi".}
 }
 \value{
-A data.frame containing absolute frequencies and Mutual Information calculations.
+A data.frame containing absolute frequencies and Mutual Information
+calculations.
 }
 \description{
-A function for calculating point-wise mutual information from quanteda tokens.
+A function for calculating point-wise mutual information
+from quanteda tokens.
 The function requires:
 \itemize{
 \item a tokens object
 \item a node word to search for
 \item a window counting to the left
 \item a window counting to the right
-So \code{collocates_by_MI(my_tokens, "test", 5, 5)} would look for collocates words to the left and 5 words to the right of the word "test".
+So \code{collocates_by_MI(my_tokens, "test", 5, 5)} would look for collocates
+words to the left and 5 words to the right of the word "test".
+}
+}
+\examples{
+\donttest{
+library(quanteda)
+texts <- c("The big cat sat on the mat",
+           "The big cat ran very fast",
+           "The big cat likes to hunt mice")
+toks <- tokens(texts)
+result <- collocates_by_MI(toks, "cat", left = 1, right = 1)
+head(result)
 }
 }

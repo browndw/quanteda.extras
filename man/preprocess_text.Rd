@@ -25,7 +25,8 @@ preprocess_text(
 
 \item{lower_case}{A logical value to make all tokens lower case}
 
-\item{accent_replace}{A logical value to replace accented characters with un-accented ones}
+\item{accent_replace}{A logical value to replace accented characters
+with un-accented ones}
 
 \item{remove_numbers}{A logical value to remove numbers}
 }
@@ -37,6 +38,7 @@ A simple function that requires a readtext object.
 It then processes the text column using basic regex substitutions.
 The default is to add a space before possessives and contractions.
 This will force their tokenization in quanteda.
-So that "Shakespeare's" will be counted as two tokens rather than a single one.
+So that "Shakespeare's" will be counted
+as two tokens rather than a single one.
 It is easy to add or delete substations as fits your analytical needs.
 }

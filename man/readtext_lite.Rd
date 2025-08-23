@@ -13,5 +13,6 @@ readtext_lite(paths)
 A readtext data.frame
 }
 \description{
-Replaces the readtext::readtext function that reads a lists of text files into a data frame.
+Replaces the readtext::readtext function that
+reads a lists of text files into a data frame.
 }
