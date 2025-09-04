@@ -238,7 +238,7 @@ key_keys <- function(target_dfm, reference_dfm, threshold = 0.05,
 #' @importFrom utils combn
 keyness_pairs <- function(dfm_a, dfm_b, ..., yates = FALSE) {
   all_corpora <- list(dfm_a, dfm_b, ...)
-  test_class <- lapply(all_corpora, function(c) inherits(c, "dfm"))
+  test_class <- unlist(lapply(all_corpora, function(c) inherits(c, "dfm")))
   if (!all(test_class)) {
     stop("Your corpora must be quanteda dfm objects.")
   }

@@ -54,9 +54,10 @@ test_that("collocates_by_MI input validation works", {
   expect_error(collocates_by_MI(test_tokens, "cat", left = 0, right = 0), 
                "The total span must be greater than 0")
   
-  # Test invalid statistic
-  expect_error(collocates_by_MI(test_tokens, "cat", statistic = "invalid"), 
-               "statistic must be one of: pmi, pmi2, pmi3, npmi")
+  # Test invalid statistic. Error message not tested, as match.arg() says "The
+  # error messages given are liable to change and did so in R 4.2.0. Do not test
+  # them in packages."
+  expect_error(collocates_by_MI(test_tokens, "cat", statistic = "invalid"))
 })
 
 test_that("collocates_by_MI works with edge cases", {
