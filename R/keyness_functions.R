@@ -47,11 +47,22 @@ log_like <- function(n_target, n_reference, total_target, total_reference,
 #' effect size calculation is called Log Ratio and was proposed by Andrew
 #' Hardie: <http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/>
 #'
+#' @details
+#' Let \eqn{n_\text{target}}{n_target} and \eqn{n_\text{ref}}{n_ref} be the
+#' counts of the word in the target and reference corpora, and let
+#' \eqn{C_\text{target}}{C_target} and \eqn{C_\text{ref}}{C_ref} be the total
+#' number of words in the target and reference corpora. The log-ratio is then
+#' \deqn{\log_2\left( \frac{n_\text{target} / C_\text{target}}{n_\text{ref} /
+#' C_\text{ref}} \right).}{log_2 ((n_target / C_target) / (n_ref / C_ref)).}
+#' A log-ratio of 0 indicates an equal rate of use in each corpus.
+#'
+#' The `n_target` and `n_reference` arguments can be vectors of counts of
+#' multiple tokens, provided they are in the same order.
 #' @param n_target The non-normalized token count in the target corpus
 #' @param n_reference The non-normalized token count in the reference corpus
 #' @param total_target The total number of tokens in the target corpus
 #' @param total_reference The total number of tokens in the reference corpus
-#' @return A numeric value representing the log ratio
+#' @return The log ratio
 #' @export
 log_ratio <- function(n_target, n_reference, total_target, total_reference) {
   total_a <- sum(n_target)

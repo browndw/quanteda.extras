@@ -9,7 +9,7 @@ collocates_by_MI(
   node_word,
   left = 5,
   right = 5,
-  statistic = "pmi"
+  statistic = c("pmi", "pmi2", "pmi3", "npmi")
 )
 }
 \arguments{

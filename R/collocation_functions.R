@@ -35,7 +35,7 @@ utils::globalVariables(c("token", "n", "freq",
 #' }
 #' @export
 collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
-                             statistic = "pmi") {
+                             statistic = c("pmi", "pmi2", "pmi3", "npmi")) {
   if (!inherits(target_tkns, "tokens")) {
     stop("Your target must be a quanteda tokens object.")
   }
@@ -45,9 +45,9 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
   if (left < 0) stop("Span values must be positive.")
   if (right < 0) stop("Span values must be positive.")
   if (left == 0 && right == 0) stop("The total span must be greater than 0.")
-  if (!statistic %in% c("pmi", "pmi2", "pmi3", "npmi")) {
-    stop("statistic must be one of: pmi, pmi2, pmi3, npmi.")
-  }
+
+  statistic <- match.arg(statistic)
+
   # Set the span as the sum of our left and right window plus the node
   span <- left + right + 1
 
@@ -227,11 +227,9 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
 #' Create a table for plotting a collocational network
 #'
 #' This function operationalizes the idea of collcational networks described by
-#' Brezina, McEnery & Wattam (2015):
-#' https://www.jbe-platform.com/content/journals/10.1075/ijcl.20.2.01bre
-#' The function takes data.frames produced
-#' by the collocates_by_MI() function above
-#' and generates a tidygraph data object for plotting in ggraph.
+#' Brezina, McEnery & Wattam (2015). The function takes data.frames produced by
+#' `collocates_by_MI()` and generates a tidygraph data object for plotting in
+#' ggraph.
 #'
 #' @param col_1 A collocations object produced by collocates_by_MI().
 #' @param ... Other collocations objects for plotting.
@@ -254,6 +252,10 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
 #' print(network)
 #' }
 #' @export
+#' @references Brezina, McEnery and Wattam (2015).
+#'   "Collocations in context: A new perspective on collocation networks."
+#'   *International Journal of Corpus Linguistics* 20 (2), 139-173.
+#'   \doi{10.1075/ijcl.20.2.01bre}
 col_network <- function(col_1, ...) {
 
   # put all the collocation data.frames into a list

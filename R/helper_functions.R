@@ -13,7 +13,7 @@ readtext_lite <- function(paths) {
   # vector
   texts <- vapply(paths, function(i) paste(readLines(i), collapse = "\n"),
                   FUN.VALUE = character(1))
-  text_df <- data.frame(doc_id = doc_ids, text = texts, 
+  text_df <- data.frame(doc_id = doc_ids, text = texts,
                         stringsAsFactors = FALSE)
   rownames(text_df) <- seq_len(nrow(text_df))
   text_df <- structure(text_df, class = c("readtext", "data.frame"))
@@ -22,26 +22,32 @@ readtext_lite <- function(paths) {
 
 #' Pre-process texts
 #'
-#' A simple function that requires a readtext object.
-#' It then processes the text column using basic regex substitutions.
-#' The default is to add a space before possessives and contractions.
-#' This will force their tokenization in quanteda.
-#' So that "Shakespeare's" will be counted
-#' as two tokens rather than a single one.
-#' It is easy to add or delete substations as fits your analytical needs.
+#' Processes a text vector using basic regex substitutions. The default is to
+#' add a space before possessives and contractions. This will force their
+#' tokenization in quanteda. So that "Shakespeare's" will be counted as two
+#' tokens rather than a single one. It is easy to add or delete substations as
+#' fits your analytical needs.
 #'
 #' @param txt A character vector
 #' @param contractions A logical value to separate contractions into two tokens
 #' @param hypens A logical value to separate hypenated words into two tokens
 #' @param punctuation A logical value to remove punctuation
 #' @param lower_case A logical value to make all tokens lower case
-#' @param accent_replace A logical value to replace accented characters
-#' with un-accented ones
+#' @param accent_replace A logical value to replace accented characters with
+#'   un-accented ones
 #' @param remove_numbers A logical value to remove numbers
 #' @return A character vector
 #' @export
-preprocess_text <- function(txt, contractions = TRUE, hypens = TRUE, 
-                           punctuation = TRUE, lower_case = TRUE, 
+#' @examples
+#' # Separating contractions
+#' preprocess_text("can't won't we'll its' it's")
+#' preprocess_text("can't won't we'll its' it's", contractions = FALSE)
+#'
+#' # Hyphenated words
+#' preprocess_text("un-knowable bluish-gray slo-mo stop-")
+#' preprocess_text("un-knowable bluish-gray slo-mo stop-", hypens = FALSE)
+preprocess_text <- function(txt, contractions = TRUE, hypens = TRUE,
+                           punctuation = TRUE, lower_case = TRUE,
                            accent_replace = TRUE, remove_numbers = FALSE) {
   cont_replace <- function(x) {
     x <- gsub("'s\\b", " 's", x)
@@ -54,15 +60,15 @@ preprocess_text <- function(txt, contractions = TRUE, hypens = TRUE,
     x <- gsub("'re\\b", " 're", x)
     x
   }
-  if (contractions == TRUE) txt <- cont_replace(txt)
-  if (lower_case == TRUE) txt <- tolower(txt)
-  if (hypens == TRUE) txt <- gsub("-", " ", txt)
-  if (remove_numbers == TRUE) txt <- stringr::str_remove_all(txt, "\\b[0-9]+\\b")
-  if (punctuation == TRUE) {
-    txt <- gsub("(?:(?<![A-Za-z0-9])[[:punct:]]+)|(?:[[:punct:]]+(?![A-Za-z0-9]))", 
+  if (contractions) txt <- cont_replace(txt)
+  if (lower_case) txt <- tolower(txt)
+  if (hypens) txt <- gsub("-", " ", txt)
+  if (remove_numbers) txt <- stringr::str_remove_all(txt, "\\b[0-9]+\\b")
+  if (punctuation) {
+    txt <- gsub("(?:(?<![A-Za-z0-9])[[:punct:]]+)|(?:[[:punct:]]+(?![A-Za-z0-9]))",
                 "", txt, perl = TRUE)
   }
-  if (accent_replace == TRUE) {
+  if (accent_replace) {
     txt <- stringi::stri_trans_general(txt, "Latin-ASCII")
   }
   txt <- stringr::str_squish(txt)
@@ -88,10 +94,10 @@ excel_style <- function(i) {
 #' @export
 normalizing_factor <- function(x) {
   nf <- 10^round(log10(x))
-  # Cap at 10^6 
-  if (nf > 1000000) nf <- 1000000 
-  
-  label <- paste0("Per_", "10", ".", 
+  # Cap at 10^6
+  if (nf > 1000000) nf <- 1000000
+
+  label <- paste0("Per_", "10", ".",
                   stringr::str_count(formatC(nf, format = "f", digits = 0), "0"))
   names(nf) <- label
   nf

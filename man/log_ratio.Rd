@@ -16,10 +16,22 @@ log_ratio(n_target, n_reference, total_target, total_reference)
 \item{total_reference}{The total number of tokens in the reference corpus}
 }
 \value{
-A numeric value representing the log ratio
+The log ratio
 }
 \description{
 Take a target column and a reference column, and return an effect size. This
 effect size calculation is called Log Ratio and was proposed by Andrew
 Hardie: \url{http://cass.lancs.ac.uk/log-ratio-an-informal-introduction/}
+}
+\details{
+Let \eqn{n_\text{target}}{n_target} and \eqn{n_\text{ref}}{n_ref} be the
+counts of the word in the target and reference corpora, and let
+\eqn{C_\text{target}}{C_target} and \eqn{C_\text{ref}}{C_ref} be the total
+number of words in the target and reference corpora. The log-ratio is then
+\deqn{\log_2\left( \frac{n_\text{target} / C_\text{target}}{n_\text{ref} /
+C_\text{ref}} \right).}{log_2 ((n_target / C_target) / (n_ref / C_ref)).}
+A log-ratio of 0 indicates an equal rate of use in each corpus.
+
+The \code{n_target} and \code{n_reference} arguments can be vectors of counts of
+multiple tokens, provided they are in the same order.
 }
