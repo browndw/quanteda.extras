@@ -329,7 +329,7 @@ col_network <- function(col_1, ...) {
   nodes$token <- as.character(nodes$token)
   nodes$n <- as.factor(nodes$n)
   nodes <- dplyr::rename(
-    nodes, label = .data$token, n_intersects = .data$n, node_weight = .data$freq
+    nodes, label = "token", n_intersects = "n", node_weight = "freq"
   )
 
   # assemble edge values - use the 4th column which contains the MI statistic
