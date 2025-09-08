@@ -29,6 +29,10 @@ test_that("collocates_by_MI works with different statistics", {
   # Check all have same number of rows (same collocations found)
   expect_equal(nrow(result_pmi), nrow(result_pmi2))
   expect_equal(nrow(result_pmi), nrow(result_npmi))
+
+  # Check correctness of token inclusions
+  tokens <- unique(result_pmi$token)
+  expect_setequal(tokens, c("big", "sat", "ran", "likes"))
 })
 
 test_that("collocates_by_MI input validation works", {
