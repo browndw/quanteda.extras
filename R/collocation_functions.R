@@ -28,6 +28,7 @@ utils::globalVariables(c(
 #'   left/right window around the node, and expected probabilities are computed
 #'   from corpus-wide token frequencies. PMI (MI1) follows the original
 #'   corpus-total-based definition.
+#' @importFrom utils head tail
 #' @examples
 #' \donttest{
 #' library(quanteda)
