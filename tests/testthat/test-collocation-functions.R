@@ -35,6 +35,20 @@ test_that("collocates_by_MI works with different statistics", {
   expect_setequal(tokens, c("big", "sat", "ran", "likes"))
 })
 
+test_that("collocates_by_MI handles words at beginning/end of sentences", {
+  skip_if_not_installed("quanteda")
+  library(quanteda)
+
+  texts <- c("Time flies like an arrow",
+             "Money may be important, but so is time")
+  test_tokens <- tokens(texts)
+
+  result_pmi <- collocates_by_MI(test_tokens, "time", left = 1, right = 1)
+
+  tokens <- unique(result_pmi$token)
+  expect_setequal(tokens, c("flies", "is"))
+})
+
 test_that("collocates_by_MI input validation works", {
   skip_if_not_installed("quanteda")
   
