@@ -56,29 +56,8 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
     stop("statistic must be one of: pmi, pmi2, pmi3, npmi")
   }
   statistic <- match.arg(statistic, .choices)
-  # Set the span as the sum of our left and right window plus the node
-  span <- left + right + 1
-
-  # Escape any regex metacharacters in the node word for safe pattern building
-  escape_regex <- function(x) {
-    stringr::str_replace_all(x, "([\\^$.|?*+()\\[\\]{}\\\\])", "\\\\\\1")
-  }
-  node_esc <- escape_regex(node_word)
-
-  # Create regular expressions for use later; ensure the node is at position
-  # left + 1 within an ngram of size span
-  if (left > 0 && right > 0) {
-    # Exactly `left` tokens before and `right` tokens after the node
-    search_exp <- paste0("(\\S+\\s){", left, "}", node_esc, "(\\s\\S+){", right, "}")
-  }
-  if (left == 0) {
-    # Node at the beginning followed by exactly `right` tokens
-    search_exp <- paste0("^", node_esc, "(\\s\\S+){", right, "}")
-  }
-  if (right == 0) {
-    # Exactly `left` tokens then node at the end
-    search_exp <- paste0("(\\S+\\s){", left, "}", node_esc, "$")
-  }
+  # Set the span as the sum of our left and right window plus the node (legacy)
+  # No longer used with kwic-based extraction, kept here for reference only.
 
   # Create a cleaned token stream for totals and window n-grams (exclude
   # punctuation-only tokens). Do this before n-gram generation to stay aligned.
@@ -89,41 +68,41 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
     padding = FALSE
   )
 
-  # Generate ngrams the size of the span using the same token basis as totals
-  n_grams <- suppressWarnings(
-    quanteda::tokens_ngrams(totals_tokens, n = span, concatenator = " ")
+  # Use KWIC to extract token contexts, which truncates at document edges.
+  # We request a symmetric window of size max(left, right), and then trim
+  # each side to the requested left/right sizes to support asymmetry.
+  max_win <- max(left, right)
+  kw <- suppressWarnings(
+    quanteda::kwic(
+      totals_tokens,
+      pattern = node_word,
+      window = max_win,
+      valuetype = "fixed",
+      case_insensitive = TRUE
+    )
   )
-  # Convert ngrams to a vector
-  n_grams <- unlist(quanteda::as.list(n_grams, totals_tokens))
 
-  # Subset the vector to include only those that contain the node word
-  # First with a fast fixed search, then using our regular expression
-  n_grams <- n_grams[stringr::str_detect(
-    n_grams, stringr::fixed(node_word, ignore_case = TRUE)
-  )]
-  n_grams <- n_grams[stringr::str_detect(
-    n_grams, stringr::regex(search_exp, ignore_case = TRUE)
-  )]
-
-  # Extract words to the left and right of the node word
-  if (left > 0) {
-    tokens_left <- stringr::word(n_grams, start = 1, end = left,
-                                 sep = stringr::fixed(" "))
+  tokens_left <- NULL
+  tokens_right <- NULL
+  if (NROW(kw)) {
+    # kw$pre and kw$post are space-separated strings of tokens
+    if (left > 0) {
+      pre_splits <- strsplit(kw$pre, " ", fixed = TRUE)
+      # take the last `left` tokens (handles shorter contexts near boundaries)
+      tokens_left <- unlist(lapply(pre_splits, function(x) {
+        if (length(x) == 0) return(character(0))
+        tail(x, left)
+      }))
+    }
+    if (right > 0) {
+      post_splits <- strsplit(kw$post, " ", fixed = TRUE)
+      # take the first `right` tokens
+      tokens_right <- unlist(lapply(post_splits, function(x) {
+        if (length(x) == 0) return(character(0))
+        head(x, right)
+      }))
+    }
   }
-  if (right > 0) {
-    tokens_right <- stringr::word(n_grams, start = span - right + 1, end = -1,
-                                  sep = stringr::fixed(" "))
-  }
-
-  # Create vectors of all words occurring in our span.
-  if (left > 0) {
-    tokens_left <- unlist(strsplit(tokens_left, split = " "))
-  }
-  if (left == 0) tokens_left <- NULL
-  if (right > 0) {
-    tokens_right <- unlist(strsplit(tokens_right, split = " "))
-  }
-  if (right == 0) tokens_right <- NULL
 
   # Generate total counts for all words in our corpus (exclude punctuation
   # from totals to align with expected PMI baselines) — use the same tokens
