@@ -1,7 +1,8 @@
 # Global variables to avoid CMD check notes
-utils::globalVariables(c("token", "n", "freq",
-                         "Token", "MI_1", "PMI", "PMI2", "PMI3", "NPMI",
-                         ".data"))
+utils::globalVariables(c(
+  "token", "n", "freq", "id", "node_word", "col_freq",
+  "Token", "MI_1", "PMI", "PMI2", "PMI3", "NPMI", ".data"
+))
 
 #' Calculate collocational associations by Mutual Information
 #'
@@ -39,7 +40,7 @@ utils::globalVariables(c("token", "n", "freq",
 #' }
 #' @export
 collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
-                             statistic = "pmi") {
+                             statistic = c("pmi", "pmi2", "pmi3", "npmi")) {
   if (!inherits(target_tkns, "tokens")) {
     stop("Your target must be a quanteda tokens object.")
   }
@@ -49,9 +50,12 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
   if (left < 0) stop("Span values must be positive.")
   if (right < 0) stop("Span values must be positive.")
   if (left == 0 && right == 0) stop("The total span must be greater than 0.")
-  if (!statistic %in% c("pmi", "pmi2", "pmi3", "npmi")) {
-    stop("statistic must be one of: pmi, pmi2, pmi3, npmi.")
+  # Validate statistic with a friendly error message expected by tests
+  .choices <- c("pmi", "pmi2", "pmi3", "npmi")
+  if (length(statistic) == 1 && !statistic %in% .choices) {
+    stop("statistic must be one of: pmi, pmi2, pmi3, npmi")
   }
+  statistic <- match.arg(statistic, .choices)
   # Set the span as the sum of our left and right window plus the node
   span <- left + right + 1
 
@@ -315,21 +319,35 @@ col_network <- function(col_1, ...) {
   # create an index
   idx <- seq_along(all_col)
 
-  # normalize frequencies
+  # normalize frequencies (guard empty) using base operations
   all_col <- lapply(
     idx,
     function(i) {
-      dplyr::mutate(all_col[[i]],
-                    col_freq = .data$col_freq / corpus_totals[[i]])
+      df <- all_col[[i]]
+      if (is.null(df) || nrow(df) == 0) return(df)
+      df$col_freq <- df$col_freq / corpus_totals[[i]]
+      df
     }
   )
-  # add a column of node words by id
-  edges <- lapply(idx, function(i) cbind(node_word = i, all_col[[i]]))
+  # add a column of node words by id; handle empty
+  edges <- lapply(idx, function(i) {
+    df <- all_col[[i]]
+    if (is.null(df) || nrow(df) == 0) {
+      data.frame(node_word = integer(0), token = character(0),
+                 col_freq = numeric(0), total_freq = numeric(0),
+                 stringsAsFactors = FALSE)
+    } else {
+      cbind(node_word = i, df)
+    }
+  })
   # bind all data.frames
   edges <- dplyr::bind_rows(edges)
 
   # create a vector of collocation tokens
-  col_vect <- lapply(idx, function(i) (all_col[[i]]$token))
+  col_vect <- lapply(idx, function(i) {
+    df <- all_col[[i]]
+    if (is.null(df) || nrow(df) == 0) character(0) else df$token
+  })
   # get unique tokens
   col_vect <- unique(unlist(col_vect))
   # and sort alphabetically
@@ -343,15 +361,36 @@ col_network <- function(col_1, ...) {
   col_id <- data.frame(
     id = seq(id_min, id_max), token = col_vect, stringsAsFactors = FALSE
   )
-  # merge to create connections based on ids
-  edges <- merge(edges, col_id, by = "token", all = TRUE)
+  # merge to create connections based on ids; keep only edges rows
+  edges <- merge(edges, col_id, by = "token", all.x = TRUE)
 
-  # group all collocates by id
-  id_grp <- dplyr::group_by(edges, .data$id)
-  # calculate the number of node words each collocation intersects with
-  intersects <- dplyr::tally(id_grp)
-  # for collocates with multiple intersections, summarize by mean
-  freq_norm <- dplyr::summarise(id_grp, freq = mean(.data$col_freq))
+  # Coalesce MI columns across possible statistics into a single MI value
+  mi_candidates <- c("PMI", "PMI2", "PMI3", "NPMI")
+  present_mi <- intersect(mi_candidates, names(edges))
+  if (length(present_mi) == 0) {
+    edges$MI <- numeric(nrow(edges))
+  } else {
+    mi_val <- rep(NA_real_, nrow(edges))
+    for (nm in present_mi) {
+      cur <- edges[[nm]]
+      sel <- is.na(mi_val) & !is.na(cur)
+      if (any(sel)) mi_val[sel] <- cur[sel]
+    }
+    mi_val[is.na(mi_val)] <- 0
+    edges$MI <- mi_val
+  }
+
+  # group all collocates by id using base R
+  if (nrow(edges) > 0) {
+    intersects <- stats::aggregate(node_word ~ id, data = edges,
+                                   FUN = function(x) length(unique(x)))
+    names(intersects)[names(intersects) == "node_word"] <- "n"
+    freq_norm <- stats::aggregate(col_freq ~ id, data = edges, FUN = mean)
+    names(freq_norm)[names(freq_norm) == "col_freq"] <- "freq"
+  } else {
+    intersects <- data.frame(id = integer(0), n = integer(0))
+    freq_norm <- data.frame(id = integer(0), freq = numeric(0))
+  }
   # find the max frequency of all collocates
   freq_max <- max(freq_norm$freq)
   # make a data.frame of node words,
@@ -361,26 +400,28 @@ col_network <- function(col_1, ...) {
   )
 
   # merge values into a single data.frame, containing all node information
-  nodes <- Reduce(
-    function(x, y) merge(x, y, by = "id"), list(col_id, intersects, freq_norm)
-  )
+  nodes <- merge(col_id, intersects, by = "id", all.x = TRUE)
+  nodes <- merge(nodes, freq_norm, by = "id", all.x = TRUE)
   # add node_word values to top of data.frame
   nodes <- rbind(node_words, nodes)
   nodes$token <- as.character(nodes$token)
   nodes$n <- as.factor(nodes$n)
-  nodes <- dplyr::rename(
-    nodes, label = "token", n_intersects = "n", node_weight = "freq"
-  )
+  names(nodes)[names(nodes) == "token"] <- "label"
+  names(nodes)[names(nodes) == "n"] <- "n_intersects"
+  names(nodes)[names(nodes) == "freq"] <- "node_weight"
 
-  # assemble edge values - use the 4th column which contains the MI statistic
-  # get the MI column name (PMI, PMI2, PMI3, or NPMI)
-  mi_col_name <- names(edges)[4]
-  edges <- dplyr::select(
-    edges, .data$id, .data$node_word, !!rlang::sym(mi_col_name)
-  )
-  edges <- dplyr::rename(
-    edges, to = .data$id, from = .data$node_word, link_weight = !!rlang::sym(mi_col_name)
-  )
+  # assemble edge values using coalesced MI
+  if (nrow(edges) > 0) {
+    edges <- data.frame(
+      to = edges$id,
+      from = edges$node_word,
+      link_weight = edges$MI,
+      stringsAsFactors = FALSE
+    )
+  } else {
+    edges <- data.frame(to = integer(0), from = integer(0),
+                        link_weight = numeric(0), stringsAsFactors = FALSE)
+  }
 
   # generate a tidygraph object for plotting
   col_net <- tidygraph::tbl_graph(nodes = nodes, edges = edges,
