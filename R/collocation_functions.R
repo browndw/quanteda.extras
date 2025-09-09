@@ -1,6 +1,7 @@
 # Global variables to avoid CMD check notes
-utils::globalVariables(c("token", "n", "freq", 
-                         "Token", "MI_1", "PMI", "PMI2", "PMI3", "NPMI"))
+utils::globalVariables(c("token", "n", "freq",
+                         "Token", "MI_1", "PMI", "PMI2", "PMI3", "NPMI",
+                         ".data"))
 
 #' Calculate collocational associations by Mutual Information
 #'
@@ -22,7 +23,10 @@ utils::globalVariables(c("token", "n", "freq",
 #' @param statistic The type of mutual information to calculate. One of "pmi"
 #'   (default), "pmi2", "pmi3", or "npmi".
 #' @return A data.frame containing absolute frequencies and Mutual Information
-#'   calculations.
+#'   calculations. Observed counts are taken from tokens within the specified
+#'   left/right window around the node, and expected probabilities are computed
+#'   from corpus-wide token frequencies. PMI (MI1) follows the original
+#'   corpus-total-based definition.
 #' @examples
 #' \donttest{
 #' library(quanteda)
@@ -35,7 +39,7 @@ utils::globalVariables(c("token", "n", "freq",
 #' }
 #' @export
 collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
-                             statistic = c("pmi", "pmi2", "pmi3", "npmi")) {
+                             statistic = "pmi") {
   if (!inherits(target_tkns, "tokens")) {
     stop("Your target must be a quanteda tokens object.")
   }
@@ -45,35 +49,53 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
   if (left < 0) stop("Span values must be positive.")
   if (right < 0) stop("Span values must be positive.")
   if (left == 0 && right == 0) stop("The total span must be greater than 0.")
-
-  statistic <- match.arg(statistic)
-
+  if (!statistic %in% c("pmi", "pmi2", "pmi3", "npmi")) {
+    stop("statistic must be one of: pmi, pmi2, pmi3, npmi.")
+  }
   # Set the span as the sum of our left and right window plus the node
   span <- left + right + 1
 
-  # Create regular expressions for use later - handle boundary cases
+  # Escape any regex metacharacters in the node word for safe pattern building
+  escape_regex <- function(x) {
+    stringr::str_replace_all(x, "([\\^$.|?*+()\\[\\]{}\\\\])", "\\\\\\1")
+  }
+  node_esc <- escape_regex(node_word)
+
+  # Create regular expressions for use later; ensure the node is at position
+  # left + 1 within an ngram of size span
   if (left > 0 && right > 0) {
-    # Allow for cases where the node word is at sentence boundaries
-    search_exp <- paste0("(^|\\S+\\s)", node_word, "(\\s\\S+|$)")
+    # Exactly `left` tokens before and `right` tokens after the node
+    search_exp <- paste0("(\\S+\\s){", left, "}", node_esc, "(\\s\\S+){", right, "}")
   }
   if (left == 0) {
-    search_exp <- paste0("^", node_word, "(\\s\\S+)", "{", right, "}")
+    # Node at the beginning followed by exactly `right` tokens
+    search_exp <- paste0("^", node_esc, "(\\s\\S+){", right, "}")
   }
   if (right == 0) {
-    search_exp <- paste0("(\\S+\\s)", "{", left, "}", node_word, "$")
+    # Exactly `left` tokens then node at the end
+    search_exp <- paste0("(\\S+\\s){", left, "}", node_esc, "$")
   }
 
-  # Generate ngrams the size of the span
+  # Create a cleaned token stream for totals and window n-grams (exclude
+  # punctuation-only tokens). Do this before n-gram generation to stay aligned.
+  totals_tokens <- quanteda::tokens_remove(
+    target_tkns,
+    pattern = "^[[:punct:]]+$",
+    valuetype = "regex",
+    padding = FALSE
+  )
+
+  # Generate ngrams the size of the span using the same token basis as totals
   n_grams <- suppressWarnings(
-    quanteda::tokens_ngrams(target_tkns, n = span, concatenator = " ")
+    quanteda::tokens_ngrams(totals_tokens, n = span, concatenator = " ")
   )
   # Convert ngrams to a vector
-  n_grams <- unlist(quanteda::as.list(n_grams, target_tkns))
+  n_grams <- unlist(quanteda::as.list(n_grams, totals_tokens))
 
-  # Subset the vector to include only ones that contain only the node word
-  # first with a fast search then using our regular expression
+  # Subset the vector to include only those that contain the node word
+  # First with a fast fixed search, then using our regular expression
   n_grams <- n_grams[stringr::str_detect(
-    n_grams, stringr::regex(node_word, ignore_case = TRUE)
+    n_grams, stringr::fixed(node_word, ignore_case = TRUE)
   )]
   n_grams <- n_grams[stringr::str_detect(
     n_grams, stringr::regex(search_exp, ignore_case = TRUE)
@@ -99,13 +121,20 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
   }
   if (right == 0) tokens_right <- NULL
 
-  # Generate total counts for all words in our corpus.
+  # Generate total counts for all words in our corpus (exclude punctuation
+  # from totals to align with expected PMI baselines) — use the same tokens
+  # as above to ensure alignment
   totals <- suppressWarnings(
-    quanteda.textstats::textstat_frequency(quanteda::dfm(target_tkns))
+    quanteda.textstats::textstat_frequency(quanteda::dfm(totals_tokens))
   )
 
   # Create a frequency table and convert it to a data.frame.
   combined_tokens <- c(tokens_left, tokens_right)
+  # Keep only alphabetic tokens to reduce artifacts from hyphens/numbers
+  if (length(combined_tokens)) {
+    combined_tokens <- tolower(combined_tokens)
+    combined_tokens <- combined_tokens[grepl("^[a-z]+$", combined_tokens)]
+  }
 
   # Handle case where no collocates are found
   if (length(combined_tokens) == 0) {
@@ -127,10 +156,15 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
     }
   }
 
+  # Ensure case consistency when merging with totals
+  totals$feature <- tolower(totals$feature)
   # Merge our collocate frequencies with the corpus totals
   col_freq <- merge(col_freq, totals[, 1:2], by = "feature", all.x = TRUE)
 
-  # If no collocates were found, return an empty result
+  # Drop rows with missing totals (shouldn't occur after lowercasing)
+  col_freq <- col_freq[!is.na(col_freq$frequency), , drop = FALSE]
+
+  # If after merging no valid collocates remain, return empty result
   if (nrow(col_freq) == 0) {
     empty_result <- data.frame(
       token = character(0),
@@ -147,14 +181,12 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
     return(empty_result)
   }
 
-  # Find the frequency of our node word and the total corpus count.
-  node_freq <- as.numeric(
-    totals[stringr::str_detect(
-      totals$feature,
-      stringr::regex(paste0("^", node_word, "$"), ignore_case = TRUE)
-    ), 2]
-  )
+  # Total corpus count (needed for expected probability of collocate)
   corpus_total <- sum(totals$frequency)
+  # Frequency of node word in the corpus (case-insensitive)
+  node_feat <- tolower(node_word)
+  node_freq <- as.numeric(totals$frequency[match(node_feat, totals$feature)])
+  if (is.na(node_freq)) node_freq <- 0
 
   # The function calculates different types of Mutual Information.
   # http://corpus.byu.edu/mutualInformation.asp
@@ -163,37 +195,38 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
   # 1 (1995)
   # MI: http://corpus.byu.edu/mutualInformation.asp
 
-  # PMI (Pointwise Mutual Information) - original MI1
+  # PMI (MI1) using corpus totals: PMI = log2( (c_freq/N) / ((c_total/N)*(node_freq/N)) )
+  # which simplifies to log2( c_freq * N / (c_total * node_freq) )
   MI_pmi <- function(c_freq, c_total) {
-    mi_score <- log2((c_freq / corpus_total) /
-                       ((c_total / corpus_total) *
-                          (node_freq / corpus_total)))
-    mi_score
+    num <- c_freq * corpus_total
+    denom <- c_total * node_freq
+    score <- log2(num / denom)
+    score[!is.finite(score)] <- NA_real_
+    score
   }
 
-  # PMI2 - PMI minus log2(freq_span/corpus_total)
+  # PMI2 and PMI3 variants using corpus_total per original convention
   MI_pmi2 <- function(c_freq, c_total) {
-    pmi <- log2((c_freq / corpus_total) /
-                  ((c_total / corpus_total) * (node_freq / corpus_total)))
-    pmi2 <- pmi - log2(c_freq / corpus_total) * (-1)
-    pmi2
+    pmi <- MI_pmi(c_freq, c_total)
+    res <- pmi + log2(c_freq / corpus_total)
+    res[!is.finite(res)] <- NA_real_
+    res
   }
 
-  # PMI3 - PMI minus 2*log2(freq_span/corpus_total)
   MI_pmi3 <- function(c_freq, c_total) {
-    pmi <- log2((c_freq / corpus_total) /
-                  ((c_total / corpus_total) *
-                     (node_freq / corpus_total)))
-    pmi3 <- pmi - log2(c_freq / corpus_total) * (-2)
-    pmi3
+    pmi <- MI_pmi(c_freq, c_total)
+    res <- pmi + 2 * log2(c_freq / corpus_total)
+    res[!is.finite(res)] <- NA_real_
+    res
   }
 
-  # NPMI (Normalized PMI) - PMI divided by -log2(freq_span/corpus_total)
+  # NPMI using corpus_total
   MI_npmi <- function(c_freq, c_total) {
-    pmi <- log2((c_freq / corpus_total) /
-                  ((c_total / corpus_total) * (node_freq / corpus_total)))
-    npmi <- pmi / (-log2(c_freq / corpus_total))
-    npmi
+    pmi <- MI_pmi(c_freq, c_total)
+    denom <- -log2(c_freq / corpus_total)
+    res <- pmi / denom
+    res[!is.finite(res)] <- NA_real_
+    res
   }
 
   # Select the appropriate MI function based on statistic parameter
@@ -215,7 +248,14 @@ collocates_by_MI <- function(target_tkns, node_word, left = 5, right = 5,
   } else {
     stop("Unexpected number of columns in col_freq: ", ncol(col_freq))
   }
-  col_freq <- col_freq[order(-col_freq[[4]]), ]
+  # Deterministic ordering: sort by MI desc, then token asc for tie-break
+  mi_col <- toupper(statistic)
+  # Round MI for stable ordering under tiny numeric differences
+  mi_sort <- round(col_freq[[mi_col]], 6)
+  col_freq <- col_freq[order(
+    -mi_sort,                      # primary: MI desc (rounded)
+    col_freq$token                 # tie-break: token asc
+  ), ]
   col_freq$token <- as.character(col_freq$token)
   rownames(col_freq) <- seq_len(nrow(col_freq))
   attr(col_freq, "node_word") <- node_word
