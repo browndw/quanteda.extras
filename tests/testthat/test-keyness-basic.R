@@ -3,7 +3,11 @@ test_that("log_like works correctly", {
   result <- log_like(10, 5, 100, 200)
   expect_type(result, "double")
   expect_length(result, 1)
-  expect_equal(result, 6.931472, tolerance = 0.1)
+  expect_equal(result, 7.329812, tolerance = 0.01)
+
+  # Test signs and vector inputs
+  result <- log_like(c(10, 5), c(5, 10), c(100, 200), c(200, 100))
+  expect_equal(result, c(1, -1) * 7.329812, tolerance = 0.01)
   
   # Test with Yates correction
   result_corrected <- log_like(10, 5, 100, 200, correct = TRUE)
