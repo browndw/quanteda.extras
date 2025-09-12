@@ -2,9 +2,16 @@
 % Please edit documentation in R/keyness_functions.R
 \name{log_like}
 \alias{log_like}
-\title{Log-likelihood calculation}
+\title{Two-way log-likelihood ratio calculation}
 \usage{
-log_like(n_target, n_reference, total_target, total_reference, correct = FALSE)
+log_like(
+  n_target,
+  n_reference,
+  total_target,
+  total_reference,
+  correct = FALSE,
+  long = TRUE
+)
 }
 \arguments{
 \item{n_target}{The non-normalized token count in the target corpus}
@@ -16,13 +23,63 @@ log_like(n_target, n_reference, total_target, total_reference, correct = FALSE)
 \item{total_reference}{The total number of tokens in the reference corpus}
 
 \item{correct}{Whether to perform the Yates correction}
+
+\item{long}{Whether to do the long calculation or the short one}
 }
 \value{
-A numeric value representing log-likelihood
+A numeric value representing log-likelihood. Signed to be positive
+when rate of use is higher in target corpus than in the reference corpus,
+and negative when it is lower.
 }
 \description{
-Log-likelihood tests the frequencies of tokens in one corpus vs. another. It
-is often used instead of a chi-square test, as it has been shown to be more
-resistant to corpora of varying sizes. For more detail see:
-\url{http://ucrel.lancs.ac.uk/llwizard.html}
+Calculates the likelihood ratio test statistic for a test of independence in
+a two-way table, i.e., a test that a particular token appears equally often
+in the target and reference corpus.
+}
+\details{
+The likelihood ratio test is often used instead of a chi-squared test, as it
+has been shown to be more resistant to corpora of varying sizes. For more
+detail see: \url{http://ucrel.lancs.ac.uk/llwizard.html}
+\subsection{Mathematical details}{
+
+Consider a two-by-two contingency table of counts of the target word in the
+target and reference corpus:\tabular{lrrr}{
+   Corpus \tab Occurrences \tab Other tokens \tab Total \cr
+   Target \tab \eqn{O_{11}} \tab \eqn{O_{12}} \tab \eqn{C_1} \cr
+   Reference \tab \eqn{O_{21}} \tab \eqn{O_{22}} \tab \eqn{C_2} \cr
+   Total \tab \eqn{R_1} \tab \eqn{R_2} \tab \eqn{N} \cr
+}
+
+
+Here the target corpus has \eqn{C_1 = O_{11} + O_{12}} total tokens. When the
+rate of occurrence is equal between target and reference corpus, the expected
+count in each cell is
+\deqn{E_{ij} = \frac{C_i R_j}{N}}{E_ij = (C_i R_j) / N}
+
+The likelihood ratio test statistic is then
+\deqn{G^2 = 2 \sum_i \sum_j O_{ij} \log \frac{O_{ij}}{E_{ij}}}{
+G^2 = 2 \sum_i \sum_j O_ij log(O_ij / E_ij)}
+
+Under the null, this is asymptotically \eqn{\chi^2(1)}.
+
+Some sources (such as Brezina 2018) call this the "long" formula, and present
+a "short" form that only includes the \eqn{j = 1} terms. The short form is
+simpler to compute but is not asymptotically \eqn{\chi^2(1)}.
+}
+}
+\examples{
+ll <- log_like(10, 5, 100, 200)
+ll
+
+# use absolute value because sign changes depending on direction of
+# difference
+pvalue <- pchisq(abs(ll), df = 1, lower.tail = FALSE)
+pvalue
+}
+\references{
+Brezina (2018). \emph{Statistics in Corpus Linguistics}, section 3.4.
+Cambridge University Press.
+}
+\seealso{
+\code{\link[=chisq.test]{chisq.test()}}
 }

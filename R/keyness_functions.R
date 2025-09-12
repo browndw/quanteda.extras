@@ -1,41 +1,109 @@
-#' Log-likelihood calculation
+#' Two-way log-likelihood ratio calculation
 #'
-#' Log-likelihood tests the frequencies of tokens in one corpus vs. another. It
-#' is often used instead of a chi-square test, as it has been shown to be more
-#' resistant to corpora of varying sizes. For more detail see:
-#' <http://ucrel.lancs.ac.uk/llwizard.html>
+#' Calculates the likelihood ratio test statistic for a test of independence in
+#' a two-way table, i.e., a test that a particular token appears equally often
+#' in the target and reference corpus.
+#'
+#' The likelihood ratio test is often used instead of a chi-squared test, as it
+#' has been shown to be more resistant to corpora of varying sizes. For more
+#' detail see: <http://ucrel.lancs.ac.uk/llwizard.html>
+#'
+#' ## Mathematical details
+#'
+#' Consider a two-by-two contingency table of counts of the target word in the
+#' target and reference corpus:
+#'
+#' | Corpus | Occurrences | Other tokens | Total |
+#' |--------|------------:|-------------:|------:|
+#' | Target | \eqn{O_{11}} | \eqn{O_{12}} | \eqn{C_1} |
+#' | Reference | \eqn{O_{21}} | \eqn{O_{22}} | \eqn{C_2} |
+#' | Total | \eqn{R_1} | \eqn{R_2} | \eqn{N} |
+#'
+#' Here the target corpus has \eqn{C_1 = O_{11} + O_{12}} total tokens. When the
+#' rate of occurrence is equal between target and reference corpus, the expected
+#' count in each cell is
+#' \deqn{E_{ij} = \frac{C_i R_j}{N}}{E_ij = (C_i R_j) / N}
+#'
+#' The likelihood ratio test statistic is then
+#' \deqn{G^2 = 2 \sum_i \sum_j O_{ij} \log \frac{O_{ij}}{E_{ij}}}{
+#' G^2 = 2 \sum_i \sum_j O_ij log(O_ij / E_ij)}
+#'
+#' Under the null, this is asymptotically \eqn{\chi^2(1)}.
+#'
+#' Some sources (such as Brezina 2018) call this the "long" formula, and present
+#' a "short" form that only includes the \eqn{j = 1} terms. The short form is
+#' simpler to compute but is not asymptotically \eqn{\chi^2(1)}.
 #'
 #' @param n_target The non-normalized token count in the target corpus
 #' @param n_reference The non-normalized token count in the reference corpus
 #' @param total_target The total number of tokens in the target corpus
 #' @param total_reference The total number of tokens in the reference corpus
 #' @param correct Whether to perform the Yates correction
-#' @return A numeric value representing log-likelihood
+#' @param long Whether to do the long calculation or the short one
+#' @return A numeric value representing log-likelihood. Signed to be positive
+#'   when rate of use is higher in target corpus than in the reference corpus,
+#'   and negative when it is lower.
+#' @seealso [chisq.test()]
+#' @references Brezina (2018). *Statistics in Corpus Linguistics*, section 3.4.
+#'   Cambridge University Press.
 #' @export
+#' @examples
+#' ll <- log_like(10, 5, 100, 200)
+#' ll
+#'
+#' # use absolute value because sign changes depending on direction of
+#' # difference
+#' pvalue <- pchisq(abs(ll), df = 1, lower.tail = FALSE)
+#' pvalue
 log_like <- function(n_target, n_reference, total_target, total_reference,
-                     correct = FALSE) {
+                     correct = FALSE, long = TRUE) {
+  # Two-by-two contingency table:
+  # |           | Word | Not word | Total
+  # | Target    |    a |        b | total_target
+  # | Reference |    c |        d | total_reference
+  # | Total     | word | not_word | N
   a <- n_target
   b <- total_target - n_target
   c <- n_reference
   d <- total_reference - n_reference
 
-  expected_a <- (n_target + n_reference) *
-    (a + c) / (a + b + c + d)
-  expected_b <- (n_target + n_reference) *
-    (b + d) / (a + b + c + d)
-  if (correct == TRUE) { # Perform the "Yates" correction
-    n_a <- ifelse(n_target - expected_a > 0.25, n_target - 0.5, n_target)
-    n_b <- ifelse(n_target - expected_a > 0.25,  n_reference + 0.5, n_reference)
+  word <- a + c
+  not_word <- b + d
+  N <- total_target + total_reference
+
+  expected_a <- total_target * word / N
+  expected_b <- total_target * not_word / N
+  expected_c <- total_reference * word / N
+  expected_d <- total_reference * not_word / N
+
+  # TODO Need to check Yates math
+  if (correct) { # Perform the "Yates" correction
+    n_a <- ifelse(a - expected_a > 0.25, a - 0.5, a)
+    n_c <- ifelse(c - expected_c > 0.25, c + 0.5, c)
 
     n_a <- ifelse(expected_a - n_target > 0.25, n_target + 0.5, n_a)
-    n_b <- ifelse(expected_a - n_target > 0.25, n_reference - 0.5, n_b)
+    n_c <- ifelse(expected_a - n_target > 0.25, n_reference - 0.5, n_c)
   } else {
-    n_a <- n_target
-    n_b <- n_reference
+    n_a <- a
+    n_c <- c
+
   }
+
+  n_b <- b
+  n_d <- d
+
   l1 <- ifelse(n_a == 0, 0, n_a * log(n_a / expected_a))
-  l2 <- ifelse(n_b == 0, 0, n_b * log(n_b / expected_b))
-  likelihood <- 2 * (l1 + l2)
+  l2 <- ifelse(n_c == 0, 0, n_c * log(n_c / expected_c))
+
+  if (long) {
+    l3 <- ifelse(n_b == 0, 0, n_b * log(n_b / expected_b))
+    l4 <- ifelse(n_d == 0, 0, n_d * log(n_d / expected_d))
+
+    likelihood <- 2 * (l1 + l2 + l3 + l4)
+  } else {
+    likelihood <- 2 * (l1 + l2)
+  }
+
   likelihood <- ifelse(n_target / total_target > n_reference / total_reference,
                        likelihood, -likelihood)
   likelihood

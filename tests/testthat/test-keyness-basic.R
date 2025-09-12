@@ -3,8 +3,9 @@ test_that("log_like works correctly", {
   result <- log_like(10, 5, 100, 200)
   expect_type(result, "double")
   expect_length(result, 1)
+  expect_equal(result, 6.931472, tolerance = 0.1)
   
-  # Test with correction
+  # Test with Yates correction
   result_corrected <- log_like(10, 5, 100, 200, correct = TRUE)
   expect_type(result_corrected, "double")
   expect_length(result_corrected, 1)
